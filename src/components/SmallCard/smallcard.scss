@@ -1,0 +1,33 @@
+
+.small-card {
+  width: 400px;
+  height: 150px;
+  background-color: var(--surface);
+  border-radius: 20px;
+}
+
+.small-card__icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, oklch(0.68 0.19 45) 0%, oklch(0.75 0.15 140) 100%);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  justify-self: center;
+  align-items: center;
+  color: var(--surface);
+  margin-top: 10px;
+}
+
+.small-card__title {
+  font-family: var(--poppins-font), sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.small-card__text {
+  font-family: var(--inter-font), sans-serif;
+  font-size: 16px;
+  margin-top: .5rem;
+  color: var(--text-muted);
+}

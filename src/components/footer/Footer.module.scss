@@ -1,0 +1,36 @@
+
+.footer {
+  margin-top: 20px;
+  background: var(--linear);
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--surface);
+}
+
+.footer__title {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.footer__text {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.footer__button {
+  width: fit-content;
+  font-family: var(--poppins-font), sans-serif;
+  font-size: 20px;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: var(--surface);
+  color: var(--primary);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+}
+

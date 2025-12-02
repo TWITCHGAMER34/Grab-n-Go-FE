@@ -1,0 +1,71 @@
+:root {
+  /*COLORS*/
+  --primary: oklch(0.68 0.19 45);
+  --primary-dark: oklch(0.55 0.19 45);
+  --secondary: oklch(0.75 0.15 140);
+  --accent: oklch(0.45 0.08 280);
+  --background: oklch(0.98 0.01 90);
+  --surface: oklch(1 0 0);
+  --text-dark: oklch(0.25 0.02 270);
+  --text-muted: oklch(0.55 0.02 270);
+  --border: oklch(0.88 0.01 270);
+  --success: oklch(0.65 0.15 145);
+  --warning: oklch(0.75 0.15 65);
+  --error: oklch(0.60 0.20 25);
+  --linear: linear-gradient(90deg, oklch(0.68 0.19 45) 0%, oklch(0.75 0.15 140) 100%);
+
+  /*FONT STACKS*/
+  --poppins-font: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --inter-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+body {
+  font-family: var(--inter-font), sans-serif;
+  background-color: var(--background);
+  color: var(--text-dark);
+}
+
+h1, h2, h3, h4, h5, h6, button {
+  font-family: var(--poppins-font), sans-serif;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.error{
+  color: var(--error);
+  font-weight: 600;
+}

@@ -1,0 +1,128 @@
+
+.hero {
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  background: -webkit-linear-gradient(90deg, rgba(255, 139, 77, 1) 0%, rgba(180, 220, 74, 0.3) 100%);
+  background: -moz-linear-gradient(90deg, rgba(255, 139, 77, 1) 0%, rgba(180, 220, 74, 0.3) 100%);
+  background: linear-gradient(90deg, rgba(255, 139, 77, 1) 0%, rgba(180, 220, 74, 0.3) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(
+                  startColorstr="#FF8B4D",
+                  endColorstr="#B4DC4A",
+                  GradientType=1
+  );
+}
+
+.hero__title {
+  color: var(--text-dark);
+  font-size: 56px;
+  font-weight: 800;
+  text-wrap: wrap;
+}
+
+.hero__title--gradient {
+  display: block;
+  background: linear-gradient(90deg, oklch(0.68 0.19 45) 0%, oklch(0.75 0.15 140) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero__text {
+  font-family: var(--inter-font), sans-serif;
+  font-size: 16px;
+  color: var(--text-muted)
+}
+
+.card__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10rem;
+  padding: 2rem;
+}
+
+.popular-dishes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.popular-dishes__title {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.popular-dishes__text {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.dishes__container {
+  display: flex;
+  flex-direction: row;
+  gap: 7rem;
+}
+
+.dish-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  contain: content;
+}
+
+.dish-card__image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0.5rem;
+}
+
+.dish-card__name {
+  margin-left: 5px;
+  font-family: var(--poppins-font), sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.dish-card__description {
+  margin-left: 5px;
+  font-family: var(--inter-font), sans-serif;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.dish-card__price {
+  margin-left: 5px;
+  font-family: var(--inter-font), sans-serif;
+  font-size: 18px;
+  font-weight: 7400;
+  color: var(--primary);
+}
+
+.popular__dishes-button {
+  width: fit-content;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--accent);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popular__dishes-button-text {
+  text-decoration: none;
+  font-family: var(--inter-font), sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--surface);
+}
