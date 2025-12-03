@@ -1,13 +1,16 @@
-// src/components/navbar/NavBar.tsx
+// File: `src/components/navbar/NavBar.tsx` (TypeScript)
 import { NavLink } from 'react-router-dom';
 import styles from './navbar.module.scss';
 import { ShoppingBag, User } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
 
 type NavKey = 'home' | 'menu' | 'orders' | 'about';
 
 export default function Navbar({ active }: { active?: NavKey }) {
     const isLinkActive = (key: NavKey, isActiveFromNavLink: boolean) =>
         active ? active === key : isActiveFromNavLink;
+
+    const { totalItems } = useCart(); // total number of items (sum of qty)
 
     return (
         <nav className={styles.navbar}>
@@ -71,14 +74,27 @@ export default function Navbar({ active }: { active?: NavKey }) {
 
             <div className={styles.right}>
                 <NavLink to='/login' className={styles.right__login}>Logga in</NavLink>
-                <NavLink to="/basket" className={styles.right__basketBtn}>
-                    <ShoppingBag />
+
+                <NavLink
+                    to="/basket"
+                    className={styles.right__basketBtn}
+                    aria-label={`Öppna kundvagn (${totalItems} artiklar)`}
+                >
+                    <span className={styles.right__basketIcon}>
+                        <ShoppingBag />
+                    </span>
+
+                    {totalItems > 0 && (
+                        <span className={styles.right__badge} aria-hidden="false">
+                            {totalItems}
+                        </span>
+                    )}
                 </NavLink>
 
                 <div className={styles.right__userPill}>
-          <span className={styles.right__userIcon}>
-            <User />
-          </span>
+                    <span className={styles.right__userIcon}>
+                        <User />
+                    </span>
                     <span className={styles.right__userText}>Personal</span>
                 </div>
             </div>
