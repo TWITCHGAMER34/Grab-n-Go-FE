@@ -88,7 +88,7 @@ export default function HomePage() {
             </section>
 
             <section className={"popular-dishes"}>
-                <h2 className={"popular-dishes__title"}>Våra populäraste rätter</h2>
+                <h2 className={"popular-dishes__title"}>Våra populäraste val</h2>
                 <p className={"popular-dishes__text"}>Smakfulla favoriter som våra kunder älskar</p>
 
                 {loading && <p>Laddar rätter...</p>}
