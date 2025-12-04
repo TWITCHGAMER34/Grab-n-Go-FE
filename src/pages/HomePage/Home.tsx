@@ -2,7 +2,7 @@
 import Navbar from '../../components/navbar/NavBar';
 import SmallCard from '../../components/SmallCard/SmallCard';
 import './home.scss';
-import {Clock, Sparkles, MapPin} from 'lucide-react';
+import {Clock, Sparkles, MapPin, ArrowRight} from 'lucide-react';
 import {useState, useEffect} from 'react';
 import {getMenu} from '../../api/dishes';
 import type {Dish} from '../../api/dishes';
@@ -48,7 +48,7 @@ export default function HomePage() {
                         Array.isArray(cat.items) ? cat.items as Dish[] : []
                     );
                 } else {
-                    throw new Error('Unexpected API response format for menu');
+                    new Error('Unexpected API response format for menu');
                 }
 
                 const selection = pickRandom(items, 3);
@@ -65,6 +65,17 @@ export default function HomePage() {
             cancelled = true;
         };
     }, []);
+
+    const skeletonCount = 3;
+    const skeletons = Array.from({length: skeletonCount}, (_, i) => (
+        <div key={`skeleton-${i}`} className="dish-card skeleton" aria-hidden="true">
+            <div className="dish-card__image skeleton-image" />
+            <div className="dish-card__order-now skeleton-order" />
+            <h3 className="dish-card__name skeleton-line skeleton-line--short" />
+            <p className="dish-card__description skeleton-line skeleton-line--long" />
+            <p className="dish-card__price skeleton-line skeleton-line--small" />
+        </div>
+    ));
 
     return (
         <>
@@ -95,18 +106,23 @@ export default function HomePage() {
                 {error && <p className="error">{error}</p>}
 
                 <div className="dishes__container">
-                    {dishes.map((dish) => (
-                        <div key={dish.id} className="dish-card">
-                            <img
-                                src={bufferLikeToDataUrl(dish.image) ?? '/images/placeholder.png'}
-                                alt={dish.name}
-                                className="dish-card__image"
-                            />
-                            <h3 className="dish-card__name">{dish.name}</h3>
-                            <p className="dish-card__description">{dish.description}</p>
-                            <p className="dish-card__price">{dish.price} kr</p>
-                        </div>
-                    ))}
+                    {loading ? (
+                        skeletons
+                    ) : (
+                        dishes.map((dish) => (
+                            <div key={dish.id} className="dish-card">
+                                <img
+                                    src={bufferLikeToDataUrl(dish.image) ?? '/images/placeholder.png'}
+                                    alt={dish.name}
+                                    className="dish-card__image"
+                                />
+                                <Link to={"/menu"} className="dish-card__order-now dish-card__order-now--active">Beställ nu <ArrowRight/></Link>
+                                <h3 className="dish-card__name">{dish.name}</h3>
+                                <p className="dish-card__description">{dish.description}</p>
+                                <p className="dish-card__price">{dish.price} kr</p>
+                            </div>
+                        ))
+                    )}
                 </div>
                 <button className="popular__dishes-button"><Link to={"/menu"} className={"popular__dishes-button-text"}>Se hela menyn</Link></button>
             </section>

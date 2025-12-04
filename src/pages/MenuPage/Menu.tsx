@@ -1,5 +1,6 @@
 // File: `src/pages/MenuPage/Menu.tsx`
 import {useEffect, useState} from "react";
+import type { ReactNode } from "react";
 import {getMenu, type Dish} from "../../api/dishes";
 import Navbar from "../../components/navbar/NavBar.tsx";
 import Footer from "../../components/footer/Footer.tsx";
@@ -79,6 +80,31 @@ export default function MenuPage() {
         setQuantities(prev => ({...prev, [key]: Math.max(1, (prev[key] || 1) - 1)}));
     };
 
+    // show a skeleton per available dish when we have a prefetched list,
+    // otherwise fall back to a sensible default (8)
+    const skeletonCount = dishes.length > 0 ? dishes.length : 8;
+    const skeletons: ReactNode[] = Array.from({length: skeletonCount}, (_, i) => (
+        <li key={`skeleton-${i}`} className="menu__item skeleton" aria-hidden="true">
+            <article>
+                <div className="menu__item-image skeleton-image" />
+                <div className="menu__item-header">
+                    <h3 className="menu__item-title skeleton-line skeleton-line--short" />
+                    <p className="menu__item-price skeleton-line skeleton-line--price" />
+                </div>
+                <p className="menu__item-desc skeleton-line skeleton-line--long" />
+                <div className="menu__item-controls">
+                    <div className="menu__qty" role="group" aria-hidden="true">
+                        <button type="button" className="menu__qty-btn skeleton-btn" aria-hidden="true">−</button>
+                        <div className="menu__qty-value skeleton-line skeleton-line--small" />
+                        <button type="button" className="menu__qty-btn skeleton-btn" aria-hidden="true">+</button>
+                    </div>
+                    <div className="menu__item-add-button skeleton-button" aria-hidden="true" />
+                </div>
+            </article>
+        </li>
+    ));
+
+
     return (
         <>
             <Navbar active="menu"/>
@@ -105,76 +131,80 @@ export default function MenuPage() {
                 </div>
 
                 <div className="menu__list">
-                    {loading && <p>Loading menu…</p>}
+                    {loading && <p className="loading">Loading menu…</p>}
                     {error && <p className="error">{error}</p>}
                     {!loading && !error && filteredDishes.length === 0 && <p>No dishes for the selected filter.</p>}
 
                     <ul className="menu__items" role="list">
-                        {filteredDishes.map((dish) => {
-                            const key = String(dish.id);
-                            const qty = quantities[key] ?? 1;
+                        {loading ? (
+                            skeletons
+                        ) : (
+                            filteredDishes.map((dish) => {
+                                const key = String(dish.id);
+                                const qty = quantities[key] ?? 1;
 
-                            return (
-                                <li key={dish.id} className="menu__item">
-                                    <article>
-                                        <img
-                                            src={bufferLikeToDataUrl(dish.image) ?? '/images/placeholder.png'}
-                                            alt={dish.name}
-                                            className="menu__item-image"
-                                        />
-                                        <div className="menu__item-header">
-                                            <h3 className="menu__item-title">{dish.name}</h3>
-                                            {dish.price != null && <p className="menu__item-price">{dish.price} kr</p>}
-                                        </div>
-                                        {dish.description && <p className="menu__item-desc">{dish.description}</p>}
+                                return (
+                                    <li key={dish.id} className="menu__item">
+                                        <article>
+                                            <img
+                                                src={bufferLikeToDataUrl(dish.image) ?? '/images/placeholder.png'}
+                                                alt={dish.name}
+                                                className="menu__item-image"
+                                            />
+                                            <div className="menu__item-header">
+                                                <h3 className="menu__item-title">{dish.name}</h3>
+                                                {dish.price != null && <p className="menu__item-price">{dish.price} kr</p>}
+                                            </div>
+                                            {dish.description && <p className="menu__item-desc">{dish.description}</p>}
 
-                                        <div className="menu__item-controls">
-                                            <div className="menu__qty" role="group"
-                                                 aria-label={`Quantity for ${dish.name}`}>
+                                            <div className="menu__item-controls">
+                                                <div className="menu__qty" role="group"
+                                                     aria-label={`Quantity for ${dish.name}`}>
+                                                    <button
+                                                        type="button"
+                                                        className="menu__qty-btn"
+                                                        onClick={() => decQty(dish.id)}
+                                                        aria-label={`Decrease quantity for ${dish.name}`}
+                                                    >
+                                                        −
+                                                    </button>
+
+                                                    <div className="menu__qty-value" aria-live="polite">{qty}</div>
+
+                                                    <button
+                                                        type="button"
+                                                        className="menu__qty-btn"
+                                                        onClick={() => incQty(dish.id)}
+                                                        aria-label={`Increase quantity for ${dish.name}`}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+
                                                 <button
                                                     type="button"
-                                                    className="menu__qty-btn"
-                                                    onClick={() => decQty(dish.id)}
-                                                    aria-label={`Decrease quantity for ${dish.name}`}
+                                                    className="menu__item-add-button"
+                                                    onClick={() =>
+                                                        addItem(
+                                                            {
+                                                                id: String(dish.id),
+                                                                name: dish.name,
+                                                                price: typeof dish.price === "number" ? dish.price : undefined,
+                                                                image: bufferLikeToDataUrl(dish.image) ?? undefined,
+                                                            },
+                                                            qty
+                                                        )
+                                                    }
+                                                    aria-label={`Add ${qty} ${dish.name} to cart`}
                                                 >
-                                                    −
-                                                </button>
-
-                                                <div className="menu__qty-value" aria-live="polite">{qty}</div>
-
-                                                <button
-                                                    type="button"
-                                                    className="menu__qty-btn"
-                                                    onClick={() => incQty(dish.id)}
-                                                    aria-label={`Increase quantity for ${dish.name}`}
-                                                >
-                                                    +
+                                                    <span className="menu__item-add-button-icon"><ShoppingCart size={17}/></span> Lägg till
                                                 </button>
                                             </div>
-
-                                            <button
-                                                type="button"
-                                                className="menu__item-add-button"
-                                                onClick={() =>
-                                                    addItem(
-                                                        {
-                                                            id: String(dish.id),
-                                                            name: dish.name,
-                                                            price: typeof dish.price === "number" ? dish.price : undefined,
-                                                            image: bufferLikeToDataUrl(dish.image) ?? undefined,
-                                                        },
-                                                        qty
-                                                    )
-                                                }
-                                                aria-label={`Add ${qty} ${dish.name} to cart`}
-                                            >
-                                                <span className="menu__item-add-button-icon"><ShoppingCart size={17}/></span> Lägg till
-                                            </button>
-                                        </div>
-                                    </article>
-                                </li>
-                            );
-                        })}
+                                        </article>
+                                    </li>
+                                );
+                            })
+                        )}
                     </ul>
                 </div>
             </section>

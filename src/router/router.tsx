@@ -1,6 +1,6 @@
 import {Suspense, lazy} from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
-import {AuthProvider, useAuth} from '../context/AuthContext';
+import {useAuth} from '../context/AuthContext';
 import type {ReactNode} from 'react';
 
 const HomePage = lazy(() => import('../pages/HomePage/Home.tsx'));
@@ -19,7 +19,6 @@ function ProtectedRoute({children}: { children: ReactNode }) {
 
 export default function AppRouter() {
     return (
-        <AuthProvider>
             <Suspense fallback={<Loading/>}>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
@@ -38,6 +37,5 @@ export default function AppRouter() {
                     />
                 </Routes>
             </Suspense>
-        </AuthProvider>
     );
 }

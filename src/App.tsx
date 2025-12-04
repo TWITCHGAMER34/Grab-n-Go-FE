@@ -1,13 +1,10 @@
-import {AuthProvider} from './context/AuthContext.tsx';
-import AppRouter from './router/router.tsx';
-import {CartProvider} from "./context/CartContext.tsx";
+import AppRouter from './router/router';
+import {CartProvider} from "./context/CartContext";
 
 export default function App() {
     return (
-        <AuthProvider>
-            <CartProvider>
-                <AppRouter/>
-            </CartProvider>
-        </AuthProvider>
+        <CartProvider>
+            <AppRouter/>
+        </CartProvider>
     )
 }

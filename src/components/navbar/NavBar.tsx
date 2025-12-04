@@ -1,8 +1,10 @@
-// File: `src/components/navbar/NavBar.tsx` (TypeScript)
-import { NavLink } from 'react-router-dom';
+// File: `src/components/navbar/NavBar.tsx`
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './navbar.module.scss';
 import { ShoppingBag, User } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 type NavKey = 'home' | 'menu' | 'orders' | 'about';
 
@@ -10,7 +12,21 @@ export default function Navbar({ active }: { active?: NavKey }) {
     const isLinkActive = (key: NavKey, isActiveFromNavLink: boolean) =>
         active ? active === key : isActiveFromNavLink;
 
-    const { totalItems } = useCart(); // total number of items (sum of qty)
+    const { totalItems } = useCart();
+    const { isLoggedIn, logout } = useAuth();
+    const navigate = useNavigate();
+    const [loggingOut, setLoggingOut] = useState(false);
+
+    const handleLogout = async () => {
+        if (loggingOut) return;
+        setLoggingOut(true);
+        try {
+            await logout();
+            navigate('/');
+        } finally {
+            setLoggingOut(false);
+        }
+    };
 
     return (
         <nav className={styles.navbar}>
@@ -73,7 +89,20 @@ export default function Navbar({ active }: { active?: NavKey }) {
             </ul>
 
             <div className={styles.right}>
-                <NavLink to='/login' className={styles.right__login}>Logga in</NavLink>
+                {isLoggedIn ? (
+                    <button
+                        type="button"
+                        className={styles.right__login}
+                        onClick={handleLogout}
+                        disabled={loggingOut}
+                    >
+                        {loggingOut ? 'Loggar ut…' : 'Logga ut'}
+                    </button>
+                ) : (
+                    <NavLink to="/login" className={styles.right__login}>
+                        Logga in
+                    </NavLink>
+                )}
 
                 <NavLink
                     to="/basket"
