@@ -1,3 +1,4 @@
+/* File: `src/components/navbar/navbar.module.scss` */
 .navbar {
   height: 64px;
   display: flex;
@@ -16,14 +17,14 @@
   min-width: 220px;
 }
 
-.logoWrap {
+.navbar__logo-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
 }
 
-.logoWrap__logoCircle {
+.navbar__logo-circle {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -32,12 +33,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 18px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.logoWrap__brand {
+.navbar__brand {
   background: -webkit-linear-gradient(360deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -57,7 +58,7 @@
   align-items: center;
 }
 
-.navbar__center__link {
+.navbar__link {
   color: var(--muted);
   text-decoration: none;
   font-size: 16px;
@@ -66,7 +67,7 @@
   transition: background .15s, color .15s;
 }
 
-.navbar__center__link:hover {
+.navbar__link:hover {
   color: #333;
   background: rgba(0, 0, 0, 0.03);
 }
@@ -80,7 +81,7 @@
 }
 
 /* right - actions */
-.right {
+.navbar__right {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -88,17 +89,17 @@
   justify-content: flex-end;
 }
 
-.right__login{
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--muted);
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: background .15s, color .15s;
+.navbar__right-login {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
 }
 
-.right__basketBtn {
+.navbar__right-basket-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -110,7 +111,7 @@
   text-decoration: none;
 }
 
-.right__basketIcon svg {
+.navbar__right-basket-icon svg {
   width: 30px;
   height: 30px;
   display: block;
@@ -118,7 +119,7 @@
   stroke-width: 1.5;
 }
 
-.right__badge {
+.navbar__right-badge {
   position: absolute;
   top: 6px;
   right: 6px;
@@ -138,9 +139,8 @@
   pointer-events: none;
 }
 
-
 /* purple user pill */
-.right__userPill {
+.navbar__right-user-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -153,7 +153,7 @@
   font-weight: 600;
 }
 
-.right__userIcon {
+.navbar__right-user-icon {
   width: 22px;
   height: 22px;
   display: inline-flex;
@@ -162,7 +162,7 @@
   font-size: 12px;
 }
 
-.right__userText{
+.navbar__right-user-text {
   font-family: var(--poppins-font), sans-serif;
   font-size: 16px;
 }
@@ -172,7 +172,7 @@
   .navbar__center {
     display: none;
   }
-  .LogoWrap__brand {
+  .navbar__brand {
     display: none;
   }
   .navbar__left {

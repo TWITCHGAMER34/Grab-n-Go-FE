@@ -1,9 +1,12 @@
-
+/* File: `src/components/SmallCard/SmallCard.module.scss` */
 .small-card {
+  align-items: center;
   width: 400px;
   height: 150px;
   background-color: var(--surface);
   border-radius: 20px;
+  gap: 10px;
+  border: 2px solid var(--border);
 }
 
 .small-card__icon {
@@ -13,21 +16,19 @@
   border-radius: 20px;
   display: flex;
   justify-content: center;
-  justify-self: center;
   align-items: center;
   color: var(--surface);
-  margin-top: 10px;
 }
 
 .small-card__title {
   font-family: var(--poppins-font), sans-serif;
   font-size: 24px;
   font-weight: 600;
+  margin: 0;
 }
 
 .small-card__text {
   font-family: var(--inter-font), sans-serif;
   font-size: 16px;
-  margin-top: .5rem;
   color: var(--text-muted);
 }

@@ -1,0 +1,177 @@
+.dish-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  contain: content;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+
+  &--skeleton {
+    pointer-events: none;
+    color: transparent;
+    background: #fff;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.dish-card__image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0.5rem;
+  transition: opacity 180ms ease, transform 180ms ease;
+  will-change: opacity, transform;
+
+  &--skeleton {
+    width: 100%;
+    height: 180px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+}
+
+.dish-card__order {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translate(-50%, 10px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  color: var(--surface);
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+
+  &--skeleton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 96px;
+    height: 36px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+
+  &--active {
+    /* when present the button becomes visible on hover (targeted below) */
+  }
+}
+
+.dish-card__order svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+/* reveal order button and animate image on hover */
+.dish-card:hover .dish-card__order--active {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.dish-card:hover .dish-card__image {
+  opacity: 0.6;
+  transform: scale(1.05);
+}
+
+.dish-card__name {
+  margin-left: 5px;
+  font-family: var(--poppins-font), sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.dish-card__name--skeleton {
+  /* additional skeleton-specific adjustments (if needed) */
+}
+
+.dish-card__description {
+  margin-left: 5px;
+  font-family: var(--inter-font), sans-serif;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.dish-card__description--skeleton {
+  /* skeleton placeholder handled by shared skeleton-line classes */
+}
+
+.dish-card__price {
+  margin-left: 5px;
+  font-family: var(--inter-font), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.dish-card__price--skeleton {
+  /* skeleton placeholder handled by shared skeleton-line classes */
+}
+
+/* helper skeleton elements kept as before */
+.skeleton-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+/* lines for text skeletons */
+.skeleton-line {
+  display: block;
+  height: 12px;
+  margin-top: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeleton-line--short {
+  width: 60%;
+  height: 18px;
+  margin-top: 14px;
+}
+
+.skeleton-line--long {
+  width: 100%;
+  height: 12px;
+}
+
+.skeleton-line--small {
+  width: 30%;
+  height: 14px;
+  margin-top: 10px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

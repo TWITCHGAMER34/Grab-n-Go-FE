@@ -1,8 +1,10 @@
-// File: `src/pages/orderSuccess/OrderSuccess.tsx` (typescript)
+// File: `src/pages/orderSuccess/OrderSuccess.tsx`
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/NavBar';
 import Footer from '../../components/footer/Footer';
 import './orderSuccess.scss';
+import SuccessCard from './SuccessCard';
+import PromoCta from './PromoCta';
 
 export default function OrderSuccess() {
     const navigate = useNavigate();
@@ -14,31 +16,17 @@ export default function OrderSuccess() {
     return (
         <>
             <Navbar />
-            <main className="order-success-page">
-                <div className="container">
-                    <div className="success-card">
-                        <div className="success-icon" aria-hidden="true">✓</div>
-                        <h1 className="title">Tack — din beställning är mottagen!</h1>
-                        {orderId && <div className="order-id">Ordernummer: <strong>{orderId}</strong></div>}
-                        <p className="subtitle">
-                            Vi förbereder din beställning. Du får en notis när den är klar för upphämtning.
-                        </p>
-
-                        <div className="actions">
-                            <button className="btn btn-primary" onClick={() => navigate('/menu')}>Fortsätt handla</button>
-                            <button className="btn btn-ghost" onClick={() => navigate('/orders')}>Mina beställningar</button>
-                        </div>
-                    </div>
+            <main className="order-success">
+                <div className="order-success__container container">
+                    <SuccessCard
+                        orderId={orderId}
+                        onContinueShopping={() => navigate('/menu')}
+                        onViewOrders={() => navigate('/orders')}
+                    />
                 </div>
             </main>
 
-            <section className="promo-cta">
-                <div className="container cta-inner">
-                    <h2>Hungrig? Beställ nu!</h2>
-                    <p>Enkel online-beställning. Snabb hämtning. Fantastisk mat.</p>
-                    <button className="cta-button" onClick={() => navigate('/menu')}>Börja beställa</button>
-                </div>
-            </section>
+            <PromoCta onStart={() => navigate('/menu')} />
 
             <Footer />
         </>

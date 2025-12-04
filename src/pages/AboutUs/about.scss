@@ -1,16 +1,14 @@
+// File: `src/pages/AboutUs/about.scss`
 :root {
   --card-shadow: 0 14px 30px rgba(12, 18, 28, 0.08);
 }
-
 
 .about-us {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
 }
-
 
 .about-us__hero__wrapper {
   max-width: 1200px;
@@ -99,7 +97,6 @@
     gap: 24px;
     justify-content: center;
     flex-wrap: wrap;
-
   }
 
   &__cards {
@@ -119,7 +116,8 @@
   }
 }
 
-.about__contact {
+/* Contact block renamed to about-us__contact to match BEM */
+.about-us__contact {
   margin-top: 80px;
   margin-bottom: 80px;
   text-align: center;
@@ -131,28 +129,29 @@
     margin-bottom: 20px;
   }
 
-  &-columns {
+  &__columns {
     display: flex;
     justify-content: center;
     gap: 100px;
   }
 
-  &-column {
+  &__column {
     display: flex;
     flex-direction: column;
     gap: 10px;
 
     &--location {
       align-items: flex-start;
-
     }
-    &__title{
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--text-dark);
+
+    &__title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
     }
   }
-  .card{
+
+  .card {
     background-color: var(--surface);
     height: 210px;
     width: 320px;
@@ -160,29 +159,35 @@
     padding: 16px;
     text-align: left;
   }
-  &-item{
+
+  &__item {
     display: flex;
     align-items: center;
     margin-bottom: 12px;
     font-size: 16px;
-    &__icon{
-        margin-right: 8px;
-        color: var(--primary);
+
+    &__icon {
+      margin-right: 8px;
+      color: var(--primary);
     }
-    &__content{
-        color: var(--text-muted);
+
+    &__content {
+      color: var(--text-muted);
     }
-    &__label{
+
+    &__label {
       font-weight: 600;
       color: var(--text-dark);
       font-style: normal;
     }
-    &__line{
-        margin-top: 4px;
+
+    &__line {
+      margin-top: 4px;
     }
-    &__link{
-        color: var(--primary);
-        text-decoration: none;
+
+    &__link {
+      color: var(--primary);
+      text-decoration: none;
     }
   }
 }

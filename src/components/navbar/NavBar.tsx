@@ -1,132 +1,16 @@
 // File: `src/components/navbar/NavBar.tsx`
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import type { NavKey } from '../../types/navigation';
 import styles from './navbar.module.scss';
-import { ShoppingBag, User } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
-
-type NavKey = 'home' | 'menu' | 'orders' | 'about';
+import NavBrand from './NavBrand';
+import NavCenter from './NavCenter';
+import NavActions from './NavActions';
 
 export default function Navbar({ active }: { active?: NavKey }) {
-    const isLinkActive = (key: NavKey, isActiveFromNavLink: boolean) =>
-        active ? active === key : isActiveFromNavLink;
-
-    const { totalItems } = useCart();
-    const { isLoggedIn, logout } = useAuth();
-    const navigate = useNavigate();
-    const [loggingOut, setLoggingOut] = useState(false);
-
-    const handleLogout = async () => {
-        if (loggingOut) return;
-        setLoggingOut(true);
-        try {
-            await logout();
-            navigate('/');
-        } finally {
-            setLoggingOut(false);
-        }
-    };
-
     return (
-        <nav className={styles.navbar}>
-            <div className={styles.navbar__left}>
-                <div className={styles.logoWrap}>
-                    <div className={styles.logoWrap__logoCircle}>G</div>
-                    <div className={styles.logoWrap__brand}>Grab 'n' Go</div>
-                </div>
-            </div>
-
-            <ul className={styles.navbar__center}>
-                <li>
-                    <NavLink
-                        to="/"
-                        className={({ isActive }) =>
-                            isLinkActive('home', isActive)
-                                ? `${styles.navbar__center__link} ${styles.active}`
-                                : styles.navbar__center__link
-                        }
-                    >
-                        Hem
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink
-                        to="/menu"
-                        className={({ isActive }) =>
-                            isLinkActive('menu', isActive)
-                                ? `${styles.navbar__center__link} ${styles.active}`
-                                : styles.navbar__center__link
-                        }
-                    >
-                        Meny
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink
-                        to="/orders"
-                        className={({ isActive }) =>
-                            isLinkActive('orders', isActive)
-                                ? `${styles.navbar__center__link} ${styles.active}`
-                                : styles.navbar__center__link
-                        }
-                    >
-                        Mina Beställningar
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink
-                        to="/about"
-                        className={({ isActive }) =>
-                            isLinkActive('about', isActive)
-                                ? `${styles.navbar__center__link} ${styles.active}`
-                                : styles.navbar__center__link
-                        }
-                    >
-                        Om oss
-                    </NavLink>
-                </li>
-            </ul>
-
-            <div className={styles.right}>
-                {isLoggedIn ? (
-                    <button
-                        type="button"
-                        className={styles.right__login}
-                        onClick={handleLogout}
-                        disabled={loggingOut}
-                    >
-                        {loggingOut ? 'Loggar ut…' : 'Logga ut'}
-                    </button>
-                ) : (
-                    <NavLink to="/login" className={styles.right__login}>
-                        Logga in
-                    </NavLink>
-                )}
-
-                <NavLink
-                    to="/basket"
-                    className={styles.right__basketBtn}
-                    aria-label={`Öppna kundvagn (${totalItems} artiklar)`}
-                >
-                    <span className={styles.right__basketIcon}>
-                        <ShoppingBag />
-                    </span>
-
-                    {totalItems > 0 && (
-                        <span className={styles.right__badge} aria-hidden="false">
-                            {totalItems}
-                        </span>
-                    )}
-                </NavLink>
-
-                <div className={styles.right__userPill}>
-                    <span className={styles.right__userIcon}>
-                        <User />
-                    </span>
-                    <span className={styles.right__userText}>Personal</span>
-                </div>
-            </div>
+        <nav className={styles['navbar']}>
+            <NavBrand />
+            <NavCenter active={active} />
+            <NavActions />
         </nav>
     );
 }

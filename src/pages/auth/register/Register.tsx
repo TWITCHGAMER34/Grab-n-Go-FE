@@ -1,9 +1,10 @@
-// File: `src/pages/auth/register/Register.tsx`
-import {useState} from 'react';
-import type {FormEvent} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../../../context/AuthContext';
-import '../login/login.scss';
+// File: `src/pages/auth/register/RegisterPage.tsx`
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../../context/AuthContext";
+import RegisterForm from "./RegisterForm";
+import Navbar from "../../../components/navbar";
+import "../login/login.scss";
 
 type FormState = {
     name: string;
@@ -13,7 +14,7 @@ type FormState = {
     confirmPassword: string;
 };
 
-export default function Register() {
+export default function RegisterPage() {
     const navigate = useNavigate();
     const {register} = useAuth();
     const [form, setForm] = useState<FormState>({
@@ -27,11 +28,8 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
 
-    const validateEmail = (s: string) =>
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
-
-    const validatePhone = (s: string) =>
-        /^\+?[0-9\-\s]{7,20}$/.test(s.trim());
+    const validateEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+    const validatePhone = (s: string) => /^\+?[0-9\-\s]{7,20}$/.test(s.trim());
 
     const errors = {
         name: form.name.trim() ? "" : "Name is required",
@@ -54,8 +52,8 @@ export default function Register() {
         setTouched((t) => ({...t, [e.target.name]: true}));
     }
 
-    async function handleSubmit(e: FormEvent) {
-        e.preventDefault();
+    async function handleSubmit(e?: React.FormEvent) {
+        if (e) e.preventDefault();
         setTouched({
             name: true,
             email: true,
@@ -78,123 +76,34 @@ export default function Register() {
             );
             navigate("/login");
         } catch (err: any) {
-            setServerError(err?.response?.data?.message ?? err?.message ?? "Registration failed");
+            setServerError(
+                err?.response?.data?.message ?? err?.message ?? "Registration failed"
+            );
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <main className="auth-page">
-            <div className="auth-card">
-                <h1>Register</h1>
+        <>
+            <Navbar/>
+            <main className="auth-page">
+                <div className="auth-page__card">
+                    <h1 className="auth-page__title">Register</h1>
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-row">
-                        <label>
-                            Name
-                            <input
-                                name="name"
-                                type="text"
-                                value={form.name}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                required
-                                disabled={loading}
-                            />
-                        </label>
-                        {touched.name && errors.name && (
-                            <div className="error-text">{errors.name}</div>
-                        )}
-                    </div>
-
-                    <div className="form-row">
-                        <label>
-                            Email
-                            <input
-                                name="email"
-                                type="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                required
-                                disabled={loading}
-                            />
-                        </label>
-                        {touched.email && errors.email && (
-                            <div className="error-text">{errors.email}</div>
-                        )}
-                    </div>
-
-                    <div className="form-row">
-                        <label>
-                            Phone
-                            <input
-                                name="phone"
-                                value={form.phone}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                type="tel"
-                                required
-                                disabled={loading}
-                            />
-                        </label>
-                        {touched.phone && errors.phone && (
-                            <div className="error-text">{errors.phone}</div>
-                        )}
-                    </div>
-
-                    <div className="form-row">
-                        <label>
-                            Password
-                            <input
-                                name="password"
-                                type="password"
-                                value={form.password}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                required
-                                disabled={loading}
-                            />
-                        </label>
-                        {touched.password && errors.password && (
-                            <div className="error-text">{errors.password}</div>
-                        )}
-                    </div>
-
-                    <div className="form-row">
-                        <label>
-                            Confirm Password
-                            <input
-                                name="confirmPassword"
-                                type="password"
-                                value={form.confirmPassword}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                required
-                                disabled={loading}
-                            />
-                        </label>
-                        {touched.confirmPassword && errors.confirmPassword && (
-                            <div className="error-text">{errors.confirmPassword}</div>
-                        )}
-                    </div>
-
-                    {serverError && (
-                        <div className="server-error">{serverError}</div>
-                    )}
-
-                    <div className="actions">
-                        <button
-                            type="submit"
-                            disabled={loading || !isValid}
-                            className="submit-btn"
-                        >
-                            {loading ? "Registering…" : "Register"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </main>
+                    <RegisterForm
+                        form={form}
+                        touched={touched}
+                        errors={errors}
+                        loading={loading}
+                        serverError={serverError}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        onSubmit={handleSubmit}
+                        isValid={isValid}
+                    />
+                </div>
+            </main>
+        </>
     );
 }

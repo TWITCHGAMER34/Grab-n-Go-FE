@@ -1,5 +1,4 @@
-// File: `src/pages/MyOrdersPage/myOrders.scss`
-/* lightweight styles for orders page */
+/* File: `src/pages/MyOrdersPage/myOrders.scss` */
 :root {
   --bg-soft: #fbf6f1;
   --surface: #fff;
@@ -17,6 +16,7 @@
   font-family: var(--inter-font), sans-serif;
 }
 
+/* global helpers inside page scope */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -24,7 +24,7 @@
 }
 
 .page-title {
-  font-family: var(--poppins-font);
+  font-family: var(--poppins-font), sans-serif;
   font-size: 34px;
   margin-bottom: 18px;
 }
@@ -42,32 +42,32 @@
   background: #fff;
 }
 
-.empty-hero {
+/* empty state */
+.my-orders-page__empty-hero {
   text-align: center;
   padding: 80px 20px;
 }
 
-.empty-icon {
+.my-orders-page__empty-icon {
   font-size: 36px;
   margin-bottom: 12px;
   opacity: 0.7;
 }
 
-.empty-hero h2 {
-  margin: 6px 0 6px;
-}
-
-.cta-btn {
-  margin-top: 10px;
-  padding: 10px 18px;
-  border-radius: 22px;
+.my-orders-page__empty-btn {
+  margin-top: 20px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
   background: var(--accent);
   color: #fff;
   border: none;
   cursor: pointer;
 }
 
-.order-card {
+/* order card */
+.my-orders-page__order-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -76,19 +76,19 @@
   box-shadow: 0 6px 20px rgba(17, 17, 17, 0.02);
 }
 
-.order-head {
+.my-orders-page__order-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
 }
 
-.order-title {
+.my-orders-page__order-title {
   font-weight: 700;
   font-size: 18px;
 }
 
-.status {
+.my-orders-page__status {
   margin-left: 8px;
   background: #fff3d9;
   padding: 4px 8px;
@@ -97,93 +97,113 @@
   color: #a86b00;
 }
 
-.meta {
+.my-orders-page__meta {
   color: var(--muted);
   font-size: 13px;
   margin-top: 6px;
 }
 
-.order-actions {
+.my-orders-page__order-actions {
   display: flex;
   gap: 8px;
 }
 
-.btn-edit, .btn-cancel, .btn-save, .btn-ghost {
+/* buttons with modifiers */
+.my-orders-page__btn {
   padding: 8px 12px;
   border-radius: 12px;
   cursor: pointer;
   border: none;
 }
 
-.btn-edit {
+.my-orders-page__btn--edit {
   background: #fff;
   border: 1px solid var(--border);
 }
 
-.btn-cancel {
+.my-orders-page__btn--cancel {
   background: #f8e7e7;
   color: #c33;
 }
 
-.btn-save {
+.my-orders-page__btn--save {
   background: var(--accent);
   color: #fff;
 }
 
-.btn-ghost {
+.my-orders-page__btn--ghost {
   background: transparent;
   border: 1px solid var(--border);
 }
 
-.order-body {
+/* body / items */
+.my-orders-page__order-body {
   margin-top: 12px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
 
-.items-list .item-row {
+.my-orders-page__items-list .my-orders-page__item-row {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
   color: var(--text-dark);
 }
 
-.order-total {
+.my-orders-page__order-total {
   text-align: right;
   margin-top: 8px;
   color: var(--muted);
 }
 
-.edit-row {
+.my-orders-page__order-total--color {
+  color: var(--primary);
+}
+
+/* edit form */
+.my-orders-page__edit-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
 }
 
-.edit-name {
+.my-orders-page__edit-name {
   font-weight: 600;
 }
 
-.edit-controls {
+.my-orders-page__edit-controls {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.edit-controls input[type="number"] {
+.my-orders-page__edit-input {
   width: 80px;
   padding: 6px;
   border-radius: 8px;
   border: 1px solid var(--border);
 }
 
-.mark-delete {
+.my-orders-page__mark-delete {
   font-size: 13px;
   color: var(--muted);
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.my-orders-page__mark-delete-input {
+  margin-right: 6px;
+}
+
+.my-orders-page__muted {
+  color: var(--muted);
+}
+
+.my-orders-page__error {
+  color: #d64545;
+  margin-top: 8px;
 }
 
 .muted {
