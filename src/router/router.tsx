@@ -10,6 +10,8 @@ const NotFound = lazy(() => import('../pages/NotFound/404.tsx'));
 const Loading = lazy(() => import('../components/loading.tsx'));
 const MenuPage = lazy(() => import('../pages/MenuPage/Menu.tsx'));
 const AboutUsPage = lazy(() => import('../pages/AboutUs/AboutUs.tsx'));
+const BasketPage = lazy(() => import('../pages/basket/Basket.tsx'));
+const OrderSuccessPage = lazy(() => import('../pages/orderSuccess/OrderSuccess.tsx'));
 
 function ProtectedRoute({children}: { children: ReactNode }) {
     const {isLoggedIn, loading} = useAuth();
@@ -26,6 +28,8 @@ export default function AppRouter() {
                     <Route path="/about" element={<AboutUsPage/>}/>
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/login" element={<Login/>}/>
+                    <Route path="/basket" element={<BasketPage/>}/>
+                    <Route path="/order-success" element={<OrderSuccessPage/>}/>
                     <Route path="*" element={<NotFound/>}/>
                     <Route
                         path="/protected"

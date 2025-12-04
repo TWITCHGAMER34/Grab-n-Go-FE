@@ -1,0 +1,213 @@
+/* File: src/pages/basket/basket.scss */
+:root {
+  --bg-soft: #fbf6f1;
+  --surface: #fff;
+  --border: #efe9e4;
+  --text-dark: #2c2c2c;
+  --text-muted: #8b8b8b;
+  --accent-left: #ff8a4a;
+  --accent-right: #b7e34b;
+  --accent: linear-gradient(90deg, var(--accent-left) 0%, var(--accent-right) 100%);
+}
+
+/* page layout */
+.basket-page {
+  background: var(--bg-soft);
+  height: 70vh;
+  padding: 24px 0 80px;
+  color: var(--text-dark);
+  font-family: var(--inter-font), sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* header/title for filled state */
+.basket-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.back-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+.page-title {
+  font-family: var(--poppins-font);
+  font-size: 40px;
+  margin: 0;
+  color: #333;
+}
+
+/* grid */
+.basket-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 28px;
+  align-items: start;
+}
+
+/* cart list */
+.cart-list {
+  min-height: 320px;
+}
+
+/* empty hero (centered, large) */
+.empty-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+  gap: 18px;
+  background: transparent;
+}
+.empty-illustration {
+  width: 86px;
+  opacity: 0.95;
+}
+.empty-title {
+  font-size: 36px;
+  margin: 8px 0 0;
+  font-family: var(--poppins-font);
+  color: #222;
+}
+.empty-sub {
+  color: var(--text-muted);
+  margin: 0;
+}
+.cta-btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 22px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* filled list item */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+.item-left {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.item-image {
+  width: 180px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.item-meta { min-width: 220px; }
+.item-name { font-weight: 700; font-size: 18px; }
+.item-price { color: var(--text-muted); font-size: 13px; margin-top: 6px; }
+
+.item-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.qty-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 6px;
+  border-radius: 8px;
+}
+.qty-controls button {
+  border: none;
+  background: transparent;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.qty-controls input {
+  width: 46px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+.item-subtotal { font-weight: 700; min-width: 70px; text-align: right; }
+.remove {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #d64545;
+  font-size: 16px;
+}
+
+/* order panel */
+.order-panel {
+  display: flex;
+  justify-content: flex-end;
+}
+.order-card {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(17,17,17,0.02);
+}
+.order-card h3 { margin-top: 0; font-size: 18px; font-weight: 700; }
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.form-row input {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.summary-rows { margin-top: 8px; border-top: 1px dashed var(--border); padding-top: 10px; }
+.summary-line { display:flex; justify-content:space-between; color:var(--text-muted); margin-bottom:6px; }
+.summary-line.total { color: var(--text-dark); font-weight:700; }
+
+.server-error { color: #d64545; margin: 8px 0; text-align: center; }
+.submit-btn {
+  width: 100%;
+  border: none;
+  padding: 12px;
+  border-radius: 24px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.pickup-hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; text-align: center; }
+
+/* responsive */
+@media (max-width: 920px) {
+  .basket-grid { grid-template-columns: 1fr; }
+  .order-panel { margin-top: 18px; justify-content: stretch; }
+  .item-image { width: 120px; height: 80px; }
+  .page-title { font-size: 28px; }
+}
