@@ -211,3 +211,27 @@
   .item-image { width: 120px; height: 80px; }
   .page-title { font-size: 28px; }
 }
+
+.cta-actions{
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.btn-primary{
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 22px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.btn-ghost{
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 22px;
+    cursor: pointer;
+    font-weight: 700;
+}

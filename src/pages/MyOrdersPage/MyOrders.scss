@@ -1,0 +1,196 @@
+// File: `src/pages/MyOrdersPage/myOrders.scss`
+/* lightweight styles for orders page */
+:root {
+  --bg-soft: #fbf6f1;
+  --surface: #fff;
+  --border: #efe9e4;
+  --text-dark: #2c2c2c;
+  --muted: #8b8b8b;
+  --accent: linear-gradient(90deg, #ff8a4a 0%, #b7e34b 100%);
+}
+
+.my-orders-page {
+  background: var(--bg-soft);
+  min-height: calc(100vh - 160px);
+  padding: 32px 0;
+  color: var(--text-dark);
+  font-family: var(--inter-font), sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-title {
+  font-family: var(--poppins-font);
+  font-size: 34px;
+  margin-bottom: 18px;
+}
+
+.search-row {
+  margin-bottom: 18px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 520px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.empty-hero {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.empty-hero h2 {
+  margin: 6px 0 6px;
+}
+
+.cta-btn {
+  margin-top: 10px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.order-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: 14px 0;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(17, 17, 17, 0.02);
+}
+
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.order-title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.status {
+  margin-left: 8px;
+  background: #fff3d9;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #a86b00;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit, .btn-cancel, .btn-save, .btn-ghost {
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-edit {
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.btn-cancel {
+  background: #f8e7e7;
+  color: #c33;
+}
+
+.btn-save {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.order-body {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.items-list .item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  color: var(--text-dark);
+}
+
+.order-total {
+  text-align: right;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.edit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.edit-name {
+  font-weight: 600;
+}
+
+.edit-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.edit-controls input[type="number"] {
+  width: 80px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.mark-delete {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  color: #d64545;
+  margin-top: 8px;
+}
