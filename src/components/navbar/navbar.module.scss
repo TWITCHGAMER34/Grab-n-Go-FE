@@ -153,6 +153,15 @@
   font-weight: 600;
 }
 
+.navbar__right-user-link{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+}
+
 .navbar__right-user-icon {
   width: 22px;
   height: 22px;

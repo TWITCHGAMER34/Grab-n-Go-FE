@@ -1,14 +1,14 @@
 // File: `src/components/navbar/NavActions.tsx`
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, User } from 'lucide-react';
+import {useState} from 'react';
+import {NavLink, useNavigate} from 'react-router-dom';
+import {ShoppingBag, User} from 'lucide-react';
 import styles from './navbar.module.scss';
-import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
+import {useCart} from '../../context/CartContext';
+import {useAuth} from '../../context/AuthContext';
 
 export default function NavActions() {
-    const { totalItems } = useCart();
-    const { isLoggedIn, logout } = useAuth();
+    const {totalItems} = useCart();
+    const {isLoggedIn, logout} = useAuth();
     const navigate = useNavigate();
     const [loggingOut, setLoggingOut] = useState(false);
 
@@ -46,7 +46,7 @@ export default function NavActions() {
                 aria-label={`Öppna kundvagn (${totalItems} artiklar)`}
             >
         <span className={styles['navbar__right-basket-icon']}>
-          <ShoppingBag />
+          <ShoppingBag/>
         </span>
 
                 {totalItems > 0 && (
@@ -57,10 +57,12 @@ export default function NavActions() {
             </NavLink>
 
             <div className={styles['navbar__right-user-pill']}>
+                <NavLink className={styles['navbar__right-user-link']} to={"/staff/login"}>
         <span className={styles['navbar__right-user-icon']}>
-          <User />
+          <User/>
         </span>
                 <span className={styles['navbar__right-user-text']}>Personal</span>
+                </NavLink>
             </div>
         </div>
     );

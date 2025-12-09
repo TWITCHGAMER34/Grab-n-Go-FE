@@ -5,7 +5,7 @@ import Navbar from '../../components/navbar/NavBar';
 import Footer from '../../components/footer/Footer';
 import './MyOrders.scss';
 import OrderList from './OrderList';
-import type { Order, OrderItem } from './types';
+import type { Order, OrderItem } from '../../types/Order';
 import { fetchOrders, updateOrder, deleteOrder } from '../../api/orders';
 
 export default function MyOrders() {
@@ -38,6 +38,7 @@ export default function MyOrders() {
 
     const startEdit = (order: Order) => {
         setEditingId(order.id);
+        // create shallow copy of items for editing (keep any extra fields like `order_item_id`, `menu_item_id`, `notes`)
         setEditDrafts((s) => ({ ...s, [String(order.id)]: order.items.map(i => ({ ...i })) }));
     };
 
@@ -50,10 +51,11 @@ export default function MyOrders() {
         });
     };
 
-    const updateItemDraft = (orderId: number | string, menu_item_id: number, changes: Partial<OrderItem>) => {
+    // now updates by item index (0-based)
+    const updateItemDraft = (orderId: number | string, itemIndex: number, changes: Partial<OrderItem>) => {
         setEditDrafts((s) => {
             const key = String(orderId);
-            const items = (s[key] || []).map(it => it.menu_item_id === menu_item_id ? { ...it, ...changes } : it);
+            const items = (s[key] || []).map((it, idx) => idx === itemIndex ? { ...it, ...changes } : it);
             return { ...s, [key]: items };
         });
     };
@@ -64,14 +66,45 @@ export default function MyOrders() {
             return;
         }
         const draft = editDrafts[String(orderId)] || [];
-        const itemsPayload = draft.map(it => {
-            if (it.quantity <= 0) return { menu_item_id: it.menu_item_id, delete: true };
-            return { menu_item_id: it.menu_item_id, quantity: it.quantity };
+
+        // Build payload using `menu_item_id` for menu items (per requested shape)
+        const itemsPayload = draft.map((it: any) => {
+            const qty = Number(it.qty ?? 0);
+
+            // existing order line (server-provided order_item_id)
+            if (it.order_item_id) {
+                if (qty <= 0) {
+                    return { order_item_id: it.order_item_id, delete: true };
+                }
+                const p: any = { order_item_id: it.order_item_id, quantity: qty };
+                if (it.notes) p.notes = it.notes;
+                return p;
+            }
+
+            // prefer `menu_item_id` if present, fall back to `id`
+            const menuId = it.menu_item_id ?? it.id ?? undefined;
+            if (menuId !== undefined) {
+                if (qty <= 0) {
+                    return { menu_item_id: menuId, delete: true };
+                }
+                const p: any = { menu_item_id: menuId, quantity: qty };
+                if (it.notes) p.notes = it.notes;
+                return p;
+            }
+
+            // fallback for new/free-text items (send name + quantity)
+            if (qty <= 0) {
+                return { name: it.name, delete: true };
+            }
+            const p: any = { name: it.name, quantity: qty };
+            if (it.notes) p.notes = it.notes;
+            return p;
         });
 
         try {
             setLoading(true);
             const payload = { user_id: Number(user.id), items: itemsPayload };
+            console.log('Submitting order update payload:', payload);
             await updateOrder(orderId, payload);
             const refreshed = await fetchOrders(Number(user.id));
             setOrders(refreshed || []);
@@ -100,7 +133,7 @@ export default function MyOrders() {
         }
     };
 
-    const filteredOrders = orders; // placeholder for future filtering
+    const filteredOrders = orders;
 
     return (
         <>

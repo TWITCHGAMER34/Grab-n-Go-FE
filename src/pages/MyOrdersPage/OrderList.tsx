@@ -1,5 +1,5 @@
-// File: `src/pages/MyOrdersPage/OrderList.tsx`
-import type {Order} from './types';
+// File: src/pages/MyOrdersPage/OrderList.tsx
+import type {Order} from '../../types/Order';
 import OrderCard from './OrderCard';
 import {Package} from "lucide-react";
 import {useNavigate} from "react-router-dom";
@@ -9,10 +9,10 @@ type Props = {
     orders: Order[];
     loading: boolean;
     editingId: number | string | null;
-    editDrafts: Record<string, import('./types').OrderItem[]>;
+    editDrafts: Record<string, import('../../types/Order').OrderItem[]>;
     startEdit: (o: Order) => void;
     cancelEdit: (id: number | string) => void;
-    updateItemDraft: (orderId: number | string, menu_item_id: number, changes: Partial<import('./types').OrderItem>) => void;
+    updateItemDraft: (orderId: number | string, itemIndex: number, changes: Partial<import('../../types/Order').OrderItem>) => void;
     submitEdit: (orderId: number | string) => Promise<void>;
     cancelOrder: (orderId: number | string) => Promise<void>;
 };
