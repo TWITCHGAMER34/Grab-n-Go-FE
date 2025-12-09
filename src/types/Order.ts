@@ -8,7 +8,8 @@ export type Order = {
     createdAt?: string;
     pickupAt?: string;
     items: OrderItem[];
+    locked: number;
     total: number;
     note?: string | null;
-    status: 'unhandled' | 'waiting' | 'processing' | 'done';
+    status: string;
 };

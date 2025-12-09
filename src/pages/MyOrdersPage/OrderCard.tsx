@@ -1,4 +1,4 @@
-// File: src/pages/MyOrdersPage/OrderCard.tsx
+// File: `src/pages/MyOrdersPage/OrderCard.tsx`
 import type { Order, OrderItem } from '../../types/Order';
 
 type Props = {
@@ -8,11 +8,41 @@ type Props = {
     loading: boolean;
     startEdit: (o: Order) => void;
     cancelEdit: (id: number | string) => void;
-    // now update by item index
     updateItemDraft: (orderId: number | string, itemIndex: number, changes: Partial<OrderItem>) => void;
     submitEdit: (orderId: number | string) => Promise<void>;
     cancelOrder: (orderId: number | string) => Promise<void>;
 };
+
+function getStatusStyle(status?: string): React.CSSProperties {
+    const s = (status || '').toLowerCase();
+    const base: React.CSSProperties = {
+        display: 'inline-block',
+        padding: '2px 8px',
+        borderRadius: 12,
+        fontSize: '0.85em',
+        fontWeight: 600,
+    };
+
+    switch (s) {
+        case 'in_kitchen':
+        case 'in kitchen':
+        case 'processing':
+            return { ...base, backgroundColor: '#fff3cd', color: '#856404' }; // yellow-ish
+        case 'pending':
+        case 'unhandled':
+            return { ...base, backgroundColor: '#e2e3e5', color: '#383d41' }; // gray
+        case 'done':
+        case 'ready':
+        case 'completed':
+            return { ...base, backgroundColor: '#d4edda', color: '#155724' }; // green
+        case 'waiting':
+            return { ...base, backgroundColor: '#cce5ff', color: '#004085' }; // blue
+        case 'locked':
+            return { ...base, backgroundColor: '#f8d7da', color: '#721c24' }; // red-ish
+        default:
+            return { ...base, backgroundColor: '#f1f1f1', color: '#333' }; // neutral
+    }
+}
 
 export default function OrderCard({
                                       order,
@@ -27,12 +57,26 @@ export default function OrderCard({
                                   }: Props) {
     const orderTotal = (order.items || []).reduce((s, it) => s + (it.price || 0) * (it.qty || 0), 0);
 
+    // treat many representations as locked (true, 1, "1", "true")
+    const isLocked = Boolean((order as any).locked);
+    // only allow edits/cancel when status is "Obehandlad" (case-insensitive) and not locked
+    const isPending = ((order.status || '').toString().toLowerCase() === 'obehandlad');
+    const showActions = !isLocked && isPending && !isEditing;
+
     return (
         <div className="my-orders-page__order-card" key={order.id}>
             <div className="my-orders-page__order-head">
                 <div>
                     <div className="my-orders-page__order-title">
-                        Order #{order.id} {order.status && <span className="my-orders-page__status">{order.status}</span>}
+                        Order #{order.id}{' '}
+                        {order.status && (
+                            <span
+                                className="my-orders-page__status"
+                                style={getStatusStyle(order.status)}
+                            >
+                                {order.status}
+                            </span>
+                        )}
                     </div>
 
                     <div className="my-orders-page__meta">
@@ -44,8 +88,22 @@ export default function OrderCard({
                 </div>
 
                 <div className="my-orders-page__order-actions">
-                    {!isEditing && <button className="my-orders-page__btn my-orders-page__btn--edit" onClick={() => startEdit(order)}>Redigera</button>}
-                    {!isEditing && <button className="my-orders-page__btn my-orders-page__btn--cancel" onClick={() => cancelOrder(order.id)}>Avbryt beställning</button>}
+                    {!isEditing && showActions && (
+                        <button
+                            className="my-orders-page__btn my-orders-page__btn--edit"
+                            onClick={() => startEdit(order)}
+                        >
+                            Redigera
+                        </button>
+                    )}
+                    {!isEditing && showActions && (
+                        <button
+                            className="my-orders-page__btn my-orders-page__btn--cancel"
+                            onClick={() => cancelOrder(order.id)}
+                        >
+                            Avbryt beställning
+                        </button>
+                    )}
                 </div>
             </div>
 

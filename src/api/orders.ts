@@ -7,15 +7,17 @@ const apiBase = import.meta.env.VITE_API_URL;
 function mapStatus(apiStatus: string): Order['status'] {
     switch (apiStatus) {
         case 'pending':
-            return 'unhandled';
-        case 'processing':
-            return 'processing';
-        case 'done':
-            return 'done';
-        case 'waiting':
-            return 'waiting';
+            return 'Obehandlad';
+        case 'in_kitchen': // handle backend "in_kitchen" status
+            return 'Behandlas';
+        case 'ready':
+            return 'Redo';
+        case 'completed':
+            return 'Slutförd';
+        case 'cancelled':
+            return 'Avbruten';
         default:
-            return 'unhandled';
+            return 'Obehandlad';
     }
 }
 
@@ -64,7 +66,6 @@ function mapItem(it: any): OrderItem {
 
 function mapOrder(api: any): Order {
     const user = api.user ?? null;
-
     const customer = user?.name;
 
     return {
@@ -78,6 +79,8 @@ function mapOrder(api: any): Order {
         total: Number(api.total ?? 0),
         note: api.staff_note ?? api.note ?? null,
         status: mapStatus(api.status),
+        // preserve backend representation (0/1/"1"/true) so components can use Boolean(order.locked)
+        locked: api.locked ?? false,
     };
 }
 
@@ -89,6 +92,7 @@ export async function fetchOrders(userId?: number): Promise<Order[]> {
     const res = await axios.get(`${apiBase}/orders?user_id=${Number(userId)}`, {
         withCredentials: true,
     });
+    console.log('Fetched orders response:', res.data);
     const data = res.data;
     if (!Array.isArray(data)) return [];
     return data.map(mapOrder);
@@ -114,10 +118,20 @@ export async function addComment(orderId: string | number, comment: string) {
     return res.data;
 }
 
+export async function lockOrder(orderId: string | number) {
+    const res = await axios.post(`${apiBase}/staff/lock-order/${orderId}`, {}, { withCredentials: true });
+    return res.data;
+}
+
 export async function deleteOrder(orderId: string | number, userId?: number) {
     const res = await axios.delete(`${apiBase}/orders/${orderId}`, {
         data: userId ? { user_id: Number(userId) } : undefined,
         withCredentials: true,
     });
+    return res.data;
+}
+
+export async function updateStatus(orderId: string | number, status: string) {
+    const res = await axios.patch(`${apiBase}/staff/status/${orderId}`, { status }, { withCredentials: true });
     return res.data;
 }
