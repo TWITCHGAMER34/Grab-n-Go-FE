@@ -109,6 +109,11 @@ export async function updateOrder(orderId: string | number, payload: Record<stri
     return res.data;
 }
 
+export async function addComment(orderId: string | number, comment: string) {
+    const res = await axios.post(`${apiBase}/staff/addComment/${orderId}`, { comment }, { withCredentials: true });
+    return res.data;
+}
+
 export async function deleteOrder(orderId: string | number, userId?: number) {
     const res = await axios.delete(`${apiBase}/orders/${orderId}`, {
         data: userId ? { user_id: Number(userId) } : undefined,

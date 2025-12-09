@@ -16,7 +16,7 @@
   background: #fff;
   padding: 18px 22px;
   border-radius: 6px;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.03);
   margin-bottom: 18px;
 }
 
@@ -96,9 +96,17 @@
   font-size: 18px;
 }
 
-.stat-card--yellow { background: #fffbe9; }
-.stat-card--blue { background: #eef6ff; }
-.stat-card--green { background: #f3fff4; }
+.stat-card--yellow {
+  background: #fffbe9;
+}
+
+.stat-card--blue {
+  background: #eef6ff;
+}
+
+.stat-card--green {
+  background: #f3fff4;
+}
 
 /* Filters */
 .staff-dashboard__filters {
@@ -130,6 +138,26 @@
   margin-top: 6px;
 }
 
+.staff-dashboard__error{
+  color: var(--error);
+}
+
+.staff-dashboard__empty {
+  align-items: center;
+  background-color: var(--surface);
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 16px;
+  margin-top: 40px;
+  border-radius: 50px;
+
+  &__text {
+    line-height: 50px;
+  }
+}
+
 /* Order card */
 .order-card {
   background: #fff;
@@ -137,7 +165,7 @@
   padding: 14px;
   margin-bottom: 14px;
   border: 1px solid #efe6df;
-  box-shadow: 0 6px 18px rgba(19,16,13,0.04);
+  box-shadow: 0 6px 18px rgba(19, 16, 13, 0.04);
   display: flex;
   flex-direction: column;
 }
@@ -163,7 +191,7 @@
   font-size: 13px;
   color: #666;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px 18px;
 }
 
@@ -197,7 +225,10 @@
   border-bottom: 1px solid #f0eae3;
 }
 
-.order-card__item-price { color: #b35a2f; font-weight: 700; }
+.order-card__item-price {
+  color: #b35a2f;
+  font-weight: 700;
+}
 
 .order-card__note {
   font-size: 13px;
@@ -219,8 +250,16 @@
   text-align: left;
 }
 
-.order-card__total-label { color: #8b7f74; font-size: 12px; }
-.order-card__total-value { color: #ff8a5b; font-weight: 800; font-size: 16px; }
+.order-card__total-label {
+  color: #8b7f74;
+  font-size: 12px;
+}
+
+.order-card__total-value {
+  color: #ff8a5b;
+  font-weight: 800;
+  font-size: 16px;
+}
 
 .order-card__controls {
   display: flex;
@@ -232,7 +271,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(90deg,#4b7cff,#7ad1ff);
+  background: linear-gradient(90deg, #4b7cff, #7ad1ff);
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -240,6 +279,7 @@
   cursor: pointer;
   font-weight: 700;
 }
+
 .btn--primary svg {
   display: block;
   width: 1.25rem;
@@ -259,5 +299,7 @@
   .staff-dashboard__stats {
     flex-direction: column;
   }
-  .order-card__body { flex-direction: column; }
+  .order-card__body {
+    flex-direction: column;
+  }
 }

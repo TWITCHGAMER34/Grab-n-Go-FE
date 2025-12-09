@@ -1,9 +1,9 @@
-// File: `src/pages/staff/dashboard/dashboard.tsx`
+// typescript
 import { useMemo, useState, useEffect } from 'react';
 import styles from './dashboard.module.scss';
 import type { Order } from '../../../types/Order';
-import { fetchAllOrders } from '../../../api/orders';
-import { Lock, LogOut} from 'lucide-react';
+import { fetchAllOrders, addComment } from '../../../api/orders';
+import { Lock, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext.tsx";
 
@@ -13,6 +13,10 @@ export default function StaffDashboard() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [commentingOrderId, setCommentingOrderId] = useState<string | null>(null);
+    const [commentText, setCommentText] = useState('');
+    const [savingComment, setSavingComment] = useState(false);
+
     const navigate = useNavigate();
     const { logout } = useAuth();
 
@@ -51,6 +55,31 @@ export default function StaffDashboard() {
             navigate('/', { replace: true });
         } finally {
             setLoggingOut(false);
+        }
+    };
+
+    const openComment = (order: Order) => {
+        setCommentingOrderId(order.id);
+        setCommentText(order.note ?? '');
+    };
+
+    const closeComment = () => {
+        setCommentingOrderId(null);
+        setCommentText('');
+        setSavingComment(false);
+    };
+
+    const saveComment = async () => {
+        if (!commentingOrderId) return;
+        setSavingComment(true);
+
+        try {
+            await addComment(commentingOrderId, commentText.trim());
+            await loadOrders();
+            closeComment();
+        } catch (err: any) {
+            setError(err?.response?.data?.message ?? err?.message ?? 'Failed to save comment');
+            setSavingComment(false);
         }
     };
 
@@ -116,7 +145,7 @@ export default function StaffDashboard() {
 
             <main className={styles['staff-dashboard__list']}>
                 {error && <div className={styles['staff-dashboard__error']}>Error: {error}</div>}
-                {!loading && visible.length === 0 && !error && <div className={styles['staff-dashboard__empty']}>Inga beställningar</div>}
+                {!loading && visible.length === 0 && !error && <div className={styles['staff-dashboard__empty']}><p className={styles['staff-dashboard__empty__text']}>Inga beställningar</p></div>}
                 {loading && <div className={styles['staff-dashboard__loading']}>Laddar beställningar…</div>}
 
                 {!loading && visible.map((o) => (
@@ -162,10 +191,39 @@ export default function StaffDashboard() {
                                     <option value="processing">Behandlas</option>
                                     <option value="done">Slutförd</option>
                                 </select>
+
+                                <button
+                                    className={styles['btn--secondary']}
+                                    onClick={() => openComment(o)}
+                                >
+                                    Kommentera köket
+                                </button>
                             </div>
                         </div>
                     </article>
                 ))}
+
+                {commentingOrderId && (
+                    <div className={styles['modal-overlay'] ?? ''} style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+                    }}>
+                        <div style={{ background: '#fff', padding: 20, borderRadius: 6, width: '90%', maxWidth: 600 }}>
+                            <h3>Kommentar till köket</h3>
+                            <textarea
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                rows={6}
+                                style={{ width: '100%', marginTop: 8 }}
+                            />
+                            <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'flex-end' }}>
+                                <button onClick={closeComment} className={styles['btn--ghost']}>Avbryt</button>
+                                <button onClick={saveComment} className={styles['btn--primary']} disabled={savingComment}>
+                                    {savingComment ? 'Sparar…' : 'Spara kommentar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
