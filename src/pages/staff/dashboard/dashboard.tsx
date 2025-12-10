@@ -1,11 +1,14 @@
-// File: `src/pages/staff/dashboard/dashboard.tsx`
+// File: src/pages/staff/dashboard/dashboard.tsx
 import { useMemo, useState, useEffect } from 'react';
 import styles from './dashboard.module.scss';
 import type { Order, OrderItem } from '../../../types/Order';
 import { fetchAllOrders, addComment, lockOrder, updateStatus, updateOrder } from '../../../api/orders';
-import { Lock, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext.tsx';
+import OrderCard from './components/OrderCard';
+import EditOrderModal from './components/EditOrderModal';
+import CommentModal from './components/CommentModal';
 
 export default function StaffDashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -18,7 +21,7 @@ export default function StaffDashboard() {
     const [savingComment, setSavingComment] = useState(false);
     const [statusUpdating, setStatusUpdating] = useState<Record<string, boolean>>({});
 
-    // New: edit modal state
+    // Edit modal state
     const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
     const [editDraftItems, setEditDraftItems] = useState<OrderItem[] | null>(null);
     const [savingEdit, setSavingEdit] = useState(false);
@@ -43,13 +46,12 @@ export default function StaffDashboard() {
         loadOrders();
     }, []);
 
-    // Reverse mapping: frontend (Swedish) -> backend status keys
     function frontendToApiStatus(front: string): string {
         const s = (front || '').toLowerCase().trim();
         if (s === 'obehandlad' || s === 'obehandlade') return 'pending';
         if (s === 'behandlas') return 'in_kitchen';
         if (s === 'redo') return 'ready';
-        if (s === 'slutförd' || s === 'slutförd' || s === 'slutförd') return 'completed';
+        if (s === 'slutförd') return 'completed';
         if (s === 'avbruten') return 'cancelled';
         if (s.includes('processing') || s.includes('kitchen')) return 'in_kitchen';
         if (s.includes('done') || s.includes('completed') || s.includes('ready')) return 'completed';
@@ -87,8 +89,8 @@ export default function StaffDashboard() {
     };
 
     const openComment = (order: Order) => {
-        setCommentingOrderId(order.id);
-        setCommentText(order.note ?? '');
+        setCommentingOrderId(order?.id != null ? String(order.id) : null);
+        setCommentText(order?.note ?? '');
     };
 
     const closeComment = () => {
@@ -100,7 +102,6 @@ export default function StaffDashboard() {
     const saveComment = async () => {
         if (!commentingOrderId) return;
         setSavingComment(true);
-
         try {
             await addComment(commentingOrderId, commentText.trim());
             await loadOrders();
@@ -127,19 +128,19 @@ export default function StaffDashboard() {
 
     const handleStatusSelect = async (orderId: string | number, newStatus: string) => {
         const id = String(orderId);
-        const prevStatus = orders.find((o) => o.id === id)?.status ?? '';
+        const prevStatus = orders.find((o) => String(o.id) === id)?.status ?? '';
         if (prevStatus === newStatus) return;
 
         const apiStatus = frontendToApiStatus(newStatus);
 
-        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
+        setOrders((prev) => prev.map((o) => (String(o.id) === id ? { ...o, status: newStatus } : o)));
         setStatusUpdating((s) => ({ ...s, [id]: true }));
         setError(null);
 
         try {
             await updateStatus(orderId, apiStatus);
         } catch (err: any) {
-            setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: prevStatus } : o)));
+            setOrders((prev) => prev.map((o) => (String(o.id) === id ? { ...o, status: prevStatus } : o)));
             setError(err?.response?.data?.message ?? err?.message ?? 'Failed to update status');
         } finally {
             setStatusUpdating((s) => {
@@ -150,11 +151,11 @@ export default function StaffDashboard() {
         }
     };
 
-    // --- Edit-order modal helpers ---
+    // --- Edit helpers ---
     const openEdit = (order: Order) => {
-        setEditingOrderId(order.id);
-        // deep copy items to avoid mutating original
-        setEditDraftItems(order.items.map((it) => ({ ...it })));
+        const id = order?.id != null ? String(order.id) : null;
+        setEditingOrderId(id);
+        setEditDraftItems(Array.isArray(order?.items) ? order.items.map(it => ({ ...it })) : []);
     };
 
     const closeEdit = () => {
@@ -166,8 +167,7 @@ export default function StaffDashboard() {
     const updateDraftItem = (index: number, changes: Partial<OrderItem>) => {
         setEditDraftItems((prev) => {
             if (!prev) return prev;
-            const copy = prev.map((it, i) => (i === index ? { ...it, ...changes } : it));
-            return copy;
+            return prev.map((it, i) => (i === index ? { ...it, ...changes } : it));
         });
     };
 
@@ -176,7 +176,6 @@ export default function StaffDashboard() {
         setSavingEdit(true);
         setError(null);
 
-        // Build payload similar to MyOrders mapping
         const itemsPayload = editDraftItems.map((it: any) => {
             const qty = Number(it.qty ?? 0);
             const notes = (it as any).notes;
@@ -235,48 +234,48 @@ export default function StaffDashboard() {
             </header>
 
             <section className={styles['staff-dashboard__stats']}>
-                <div className={styles['stat-card']}>
-                    <div className={styles['stat-card__label']}>Totalt antal</div>
-                    <div className={styles['stat-card__value']}>{stats.total}</div>
+                <div className={styles['staff-dashboard__stat']}>
+                    <div className={styles['staff-dashboard__stat-label']}>Totalt antal</div>
+                    <div className={styles['staff-dashboard__stat-value']}>{stats.total}</div>
                 </div>
 
-                <div className={`${styles['stat-card']} ${styles['stat-card--yellow']}`}>
-                    <div className={styles['stat-card__label']}>Obehandlade</div>
-                    <div className={styles['stat-card__value']}>{stats.unhandled}</div>
+                <div className={`${styles['staff-dashboard__stat']} ${styles['staff-dashboard__stat--yellow']}`}>
+                    <div className={styles['staff-dashboard__stat-label']}>Obehandlade</div>
+                    <div className={styles['staff-dashboard__stat-value']}>{stats.unhandled}</div>
                 </div>
 
-                <div className={`${styles['stat-card']} ${styles['stat-card--blue']}`}>
-                    <div className={styles['stat-card__label']}>Behandlas</div>
-                    <div className={styles['stat-card__value']}>{stats.processing}</div>
+                <div className={`${styles['staff-dashboard__stat']} ${styles['staff-dashboard__stat--blue']}`}>
+                    <div className={styles['staff-dashboard__stat-label']}>Behandlas</div>
+                    <div className={styles['staff-dashboard__stat-value']}>{stats.processing}</div>
                 </div>
 
-                <div className={`${styles['stat-card']} ${styles['stat-card--green']}`}>
-                    <div className={styles['stat-card__label']}>Redo/Slutförd</div>
-                    <div className={styles['stat-card__value']}>{stats.done}</div>
+                <div className={`${styles['staff-dashboard__stat']} ${styles['staff-dashboard__stat--green']}`}>
+                    <div className={styles['staff-dashboard__stat-label']}>Redo/Slutförd</div>
+                    <div className={styles['staff-dashboard__stat-value']}>{stats.done}</div>
                 </div>
             </section>
 
             <nav className={styles['staff-dashboard__filters']}>
                 <button
-                    className={`${styles['filter-pill']} ${filter === 'all' ? styles['filter-pill--active'] : ''}`}
+                    className={`${styles['staff-dashboard__filter-pill']} ${filter === 'all' ? styles['staff-dashboard__filter-pill--active'] : ''}`}
                     onClick={() => setFilter('all')}
                 >
                     Alla ({orders.length})
                 </button>
                 <button
-                    className={`${styles['filter-pill']} ${filter === 'unhandled' ? styles['filter-pill--active'] : ''}`}
+                    className={`${styles['staff-dashboard__filter-pill']} ${filter === 'unhandled' ? styles['staff-dashboard__filter-pill--active'] : ''}`}
                     onClick={() => setFilter('unhandled')}
                 >
                     Obehandlade ({stats.unhandled})
                 </button>
                 <button
-                    className={`${styles['filter-pill']} ${filter === 'processing' ? styles['filter-pill--active'] : ''}`}
+                    className={`${styles['staff-dashboard__filter-pill']} ${filter === 'processing' ? styles['staff-dashboard__filter-pill--active'] : ''}`}
                     onClick={() => setFilter('processing')}
                 >
                     Behandlas ({stats.processing})
                 </button>
                 <button
-                    className={`${styles['filter-pill']} ${filter === 'done' ? styles['filter-pill--active'] : ''}`}
+                    className={`${styles['staff-dashboard__filter-pill']} ${filter === 'done' ? styles['staff-dashboard__filter-pill--active'] : ''}`}
                     onClick={() => setFilter('done')}
                 >
                     Slutförd ({stats.done})
@@ -290,183 +289,44 @@ export default function StaffDashboard() {
 
                 {!loading && visible.length === 0 && !error && (
                     <div className={styles['staff-dashboard__empty']}>
-                        <p className={styles['staff-dashboard__empty__text']}>Inga beställningar</p>
+                        <p className={styles['staff-dashboard__empty-text']}>Inga beställningar</p>
                     </div>
                 )}
 
-                {!loading &&
-                    visible.map((o) => {
-                        const isLocked = Boolean((o as any).locked);
-                        return (
-                            <article key={o.id} className={styles['order-card']}>
-                                <div className={styles['order-card__body']}>
-                                    <div className={styles['order-card__meta']}>
-                                        <h3 className={styles['order-card__title']}>
-                                            Order #{o.id} - {o.status}
-                                        </h3>
-                                        <div className={styles['order-card__info']}>
-                                            {/* details here */}
-                                            <div>
-                                                <strong>Kund:</strong> {o.customer}
-                                            </div>
-                                            <div>
-                                                <strong>Telefon:</strong> {o.phone}
-                                            </div>
-                                            <div>
-                                                <strong>E-post:</strong> {o.email}
-                                            </div>
-                                            <div>
-                                                <strong>Beställd:</strong> {o.createdAt}
-                                            </div>
-                                            <div>
-                                                <strong>Önskad upphämtning:</strong> {o.pickupAt}
-                                            </div>
-                                        </div>
-                                    </div>
+                {!loading && visible.map((o) => (
+                    <OrderCard
+                        key={String(o.id)}
+                        order={o}
+                        loading={loading}
+                        statusUpdating={statusUpdating}
+                        onLock={handleLock}
+                        onOpenComment={() => openComment(o)}
+                        onOpenEdit={() => openEdit(o)}
+                        onStatusSelect={handleStatusSelect}
+                    />
+                ))}
 
-                                    <div className={styles['order-card__items']}>
-                                        <div className={styles['order-card__section-title']}>Beställda varor</div>
-                                        <ul className={styles['order-card__items-list']}>
-                                            {o.items.map((it, i) => (
-                                                <li key={i} className={styles['order-card__item']}>
-                                                    <span className={styles['order-card__item-name']}>
-                                                        {it.qty}x {it.name}
-                                                    </span>
-                                                    <span className={styles['order-card__item-price']}>{it.price} kr</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        <div className={styles['order-card__section-title']}>Kommentar till köket</div>
-                                        <div className={styles['order-card__note']}>{o.note ?? 'Ingen kommentar tillagd'}</div>
-                                    </div>
-                                </div>
-
-                                <div className={styles['order-card__footer']}>
-                                    <div className={styles['order-card__total']}>
-                                        <div className={styles['order-card__total-label']}>Totalt</div>
-                                        <div className={styles['order-card__total-value']}>{o.total} kr</div>
-                                    </div>
-
-                                    <div className={styles['order-card__controls']}>
-                                        <button
-                                            className={styles['btn--primary']}
-                                            onClick={() => handleLock(o.id)}
-                                            disabled={loading || isLocked}
-                                        >
-                                            <Lock size={20} /> {isLocked ? 'Låst (Tillagas)' : 'Lås (Skicka till kök)'}
-                                        </button>
-
-                                        <select
-                                            className={styles['select-status']}
-                                            value={o.status}
-                                            onChange={(e) => handleStatusSelect(o.id, e.target.value)}
-                                            disabled={loading || Boolean(statusUpdating[o.id])}
-                                        >
-                                            <option value="Obehandlad">Obehandlad</option>
-                                            <option value="Behandlas">Behandlas</option>
-                                            <option value="Redo">Redo</option>
-                                            <option value="Slutförd">Slutförd</option>
-                                        </select>
-
-                                        <button className={styles['btn--secondary']} onClick={() => openComment(o)}>
-                                            Kommentera köket
-                                        </button>
-
-                                        <button className={styles['btn--secondary']} onClick={() => openEdit(o)} disabled={loading || isLocked}>
-                                            Ändra beställning
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-                        );
-                    })}
-
-                {/* Comment modal (existing) */}
                 {commentingOrderId && (
-                    <div
-                        className={styles['modal-overlay'] ?? ''}
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(0,0,0,0.4)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 9999,
-                        }}
-                    >
-                        <div style={{ background: '#fff', padding: 20, borderRadius: 6, width: '90%', maxWidth: 600 }}>
-                            <h3>Kommentar till köket</h3>
-                            <textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} rows={6} style={{ width: '100%', marginTop: 8 }} />
-                            <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'flex-end' }}>
-                                <button onClick={closeComment} className={styles['btn--ghost']}>
-                                    Avbryt
-                                </button>
-                                <button onClick={saveComment} className={styles['btn--primary']} disabled={savingComment}>
-                                    {savingComment ? 'Sparar…' : 'Spara kommentar'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <CommentModal
+                        orderId={commentingOrderId}
+                        text={commentText}
+                        onChangeText={setCommentText}
+                        onClose={closeComment}
+                        onSave={saveComment}
+                        saving={savingComment}
+                    />
                 )}
 
-                {/* Edit-order modal */}
-                {editingOrderId && editDraftItems && (
-                    <div
-                        className={styles['modal-overlay'] ?? ''}
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(0,0,0,0.4)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 9999,
-                        }}
-                    >
-                        <div style={{ background: '#fff', padding: 20, borderRadius: 6, width: '95%', maxWidth: 800, maxHeight: '90%', overflowY: 'auto' }}>
-                            <h3>Ändra beställning #{editingOrderId}</h3>
-
-                            <div style={{ marginTop: 12 }}>
-                                {editDraftItems.map((it, idx) => (
-                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 600 }}>{it.name}</div>
-                                            {(it as any).notes && <div style={{ fontSize: 12, color: '#666' }}>{(it as any).notes}</div>}
-                                        </div>
-
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <input
-                                                type="number"
-                                                min={0}
-                                                value={it.qty}
-                                                onChange={(e) => updateDraftItem(idx, { qty: Math.max(0, Number(e.target.value || 0)) })}
-                                                style={{ width: 90 }}
-                                            />
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={(it.qty || 0) <= 0}
-                                                    onChange={(e) => updateDraftItem(idx, { qty: e.target.checked ? 0 : Math.max(1, it.qty || 1) })}
-                                                />
-                                                Ta bort
-                                            </label>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
-                                <button onClick={closeEdit} className={styles['btn--ghost']} disabled={savingEdit}>
-                                    Avbryt
-                                </button>
-                                <button onClick={saveEdit} className={styles['btn--primary']} disabled={savingEdit || loading}>
-                                    {savingEdit ? 'Sparar…' : 'Spara ändringar'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {editingOrderId !== null && editDraftItems && (
+                    <EditOrderModal
+                        orderId={editingOrderId}
+                        items={editDraftItems}
+                        onUpdateItem={updateDraftItem}
+                        onClose={closeEdit}
+                        onSave={saveEdit}
+                        saving={savingEdit}
+                        loading={loading}
+                    />
                 )}
             </main>
         </div>
