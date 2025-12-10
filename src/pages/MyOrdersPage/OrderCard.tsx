@@ -13,8 +13,15 @@ type Props = {
     cancelOrder: (orderId: number | string) => Promise<void>;
 };
 
+const normalize = (v?: string) =>
+    (v || '')
+        .normalize?.('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLowerCase()
+        .trim() ?? (v || '').toLowerCase();
+
 function getStatusStyle(status?: string): React.CSSProperties {
-    const s = (status || '').toLowerCase();
+    const s = normalize(status);
     const base: React.CSSProperties = {
         display: 'inline-block',
         padding: '2px 8px',
@@ -23,25 +30,23 @@ function getStatusStyle(status?: string): React.CSSProperties {
         fontWeight: 600,
     };
 
-    switch (s) {
-        case 'in_kitchen':
-        case 'in kitchen':
-        case 'processing':
-            return { ...base, backgroundColor: '#fff3cd', color: '#856404' }; // yellow-ish
-        case 'pending':
-        case 'unhandled':
-            return { ...base, backgroundColor: '#e2e3e5', color: '#383d41' }; // gray
-        case 'done':
-        case 'ready':
-        case 'completed':
-            return { ...base, backgroundColor: '#d4edda', color: '#155724' }; // green
-        case 'waiting':
-            return { ...base, backgroundColor: '#cce5ff', color: '#004085' }; // blue
-        case 'locked':
-            return { ...base, backgroundColor: '#f8d7da', color: '#721c24' }; // red-ish
-        default:
-            return { ...base, backgroundColor: '#f1f1f1', color: '#333' }; // neutral
+    if (s.includes('behandl') || s.includes('tillag') || s.includes('kitchen') || s.includes('in_kitchen')) {
+        return { ...base, backgroundColor: '#fff3cd', color: '#856404' }; // yellow-ish
     }
+
+    if (s.includes('obehandl') || s === 'pending' || s.includes('unhandled')) {
+        return { ...base, backgroundColor: '#e2e3e5', color: '#383d41' }; // gray
+    }
+
+    if (s.includes('redo') || s.includes('slutf') || s.includes('completed') || s.includes('klar')) {
+        return { ...base, backgroundColor: '#d4edda', color: '#155724' }; // green
+    }
+
+    if (s.includes('vantar') || s.includes('waiting')) {
+        return { ...base, backgroundColor: '#cce5ff', color: '#004085' }; // blue
+    }
+
+    return { ...base, backgroundColor: '#f1f1f1', color: '#333' }; // neutral
 }
 
 export default function OrderCard({
@@ -57,10 +62,11 @@ export default function OrderCard({
                                   }: Props) {
     const orderTotal = (order.items || []).reduce((s, it) => s + (it.price || 0) * (it.qty || 0), 0);
 
-    // treat many representations as locked (true, 1, "1", "true")
-    const isLocked = Boolean((order as any).locked);
-    // only allow edits/cancel when status is "Obehandlad" (case-insensitive) and not locked
-    const isPending = ((order.status || '').toString().toLowerCase() === 'obehandlad');
+    // order.locked is a boolean (normalized in api mapper)
+    const isLocked = Boolean(order.locked);
+
+    // only allow edits/cancel when status is exactly "Obehandlad" (after normalization) and not locked
+    const isPending = normalize(order.status) === 'obehandlad';
     const showActions = !isLocked && isPending && !isEditing;
 
     return (
@@ -136,7 +142,7 @@ export default function OrderCard({
                                     <label className="my-orders-page__mark-delete">
                                         <input
                                             type="checkbox"
-                                            className="my-orders-page__mark-delete-input"
+                                            className="my-orders-page__Mark-delete-input"
                                             checked={(it.qty || 0) <= 0}
                                             onChange={(e) => updateItemDraft(order.id, idx, { qty: e.target.checked ? 0 : Math.max(1, it.qty || 1) })}
                                         /> Ta bort

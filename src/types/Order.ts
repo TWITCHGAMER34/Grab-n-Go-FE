@@ -8,7 +8,7 @@ export type Order = {
     createdAt?: string;
     pickupAt?: string;
     items: OrderItem[];
-    locked: number;
+    locked: boolean;
     total: number;
     note?: string | null;
     status: string;

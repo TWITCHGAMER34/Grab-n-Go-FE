@@ -1,4 +1,4 @@
-// File: src/api/orders.ts
+// File: `src/api/orders.ts`
 import axios from 'axios';
 import type { Order, OrderItem } from '../types/Order';
 
@@ -8,7 +8,7 @@ function mapStatus(apiStatus: string): Order['status'] {
     switch (apiStatus) {
         case 'pending':
             return 'Obehandlad';
-        case 'in_kitchen': // handle backend "in_kitchen" status
+        case 'in_kitchen':
             return 'Behandlas';
         case 'ready':
             return 'Redo';
@@ -50,12 +50,9 @@ function mapItem(it: any): OrderItem {
         price: Number(it.unit_price ?? it.price ?? 0),
     };
 
-    // Preserve backend identifiers and notes on the mapped item (kept as `any` on the object)
     if (it.menu_item_id ?? it.id) {
-        // map backend menu item identifier as `menu_item_id` and also keep `id` if present
         if (it.menu_item_id) base.menu_item_id = it.menu_item_id;
         if (it.id && !base.menu_item_id) base.id = it.id;
-        // also keep canonical `id` if backend used that for menu item
         if (it.id) base.id = it.id;
     }
     if (it.order_item_id) base.order_item_id = it.order_item_id;
@@ -68,6 +65,14 @@ function mapOrder(api: any): Order {
     const user = api.user ?? null;
     const customer = user?.name;
 
+    // normalize locked to a boolean so frontend logic is simpler
+    const lockedRaw = api.locked;
+    const locked =
+        lockedRaw === true ||
+        lockedRaw === 1 ||
+        lockedRaw === '1' ||
+        String(lockedRaw).toLowerCase() === 'true';
+
     return {
         id: String(api.id),
         customer,
@@ -79,14 +84,10 @@ function mapOrder(api: any): Order {
         total: Number(api.total ?? 0),
         note: api.staff_note ?? api.note ?? null,
         status: mapStatus(api.status),
-        // preserve backend representation (0/1/"1"/true) so components can use Boolean(order.locked)
-        locked: api.locked ?? false,
+        locked,
     };
 }
 
-/**
- * Fetch orders for a user and map to frontend `Order` shape.
- */
 export async function fetchOrders(userId?: number): Promise<Order[]> {
     if (!userId) return [];
     const res = await axios.get(`${apiBase}/orders?user_id=${Number(userId)}`, {
@@ -98,9 +99,6 @@ export async function fetchOrders(userId?: number): Promise<Order[]> {
     return data.map(mapOrder);
 }
 
-/**
- * Fetch all orders (for staff/dashboard) and map to frontend `Order` shape.
- */
 export async function fetchAllOrders(): Promise<Order[]> {
     const res = await axios.get(`${apiBase}/staff/all`, { withCredentials: true });
     const data = res.data;

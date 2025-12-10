@@ -1,5 +1,5 @@
 // File: `src/pages/MyOrdersPage/MyOrders.tsx`
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/navbar/NavBar';
 import Footer from '../../components/footer/Footer';
@@ -15,6 +15,8 @@ export default function MyOrders() {
     const [editingId, setEditingId] = useState<number | string | null>(null);
     const [editDrafts, setEditDrafts] = useState<Record<string, OrderItem[]>>({});
     const [error, setError] = useState<string | null>(null);
+
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         async function load() {
@@ -38,7 +40,6 @@ export default function MyOrders() {
 
     const startEdit = (order: Order) => {
         setEditingId(order.id);
-        // create shallow copy of items for editing (keep any extra fields like `order_item_id`, `menu_item_id`, `notes`)
         setEditDrafts((s) => ({ ...s, [String(order.id)]: order.items.map(i => ({ ...i })) }));
     };
 
@@ -51,7 +52,6 @@ export default function MyOrders() {
         });
     };
 
-    // now updates by item index (0-based)
     const updateItemDraft = (orderId: number | string, itemIndex: number, changes: Partial<OrderItem>) => {
         setEditDrafts((s) => {
             const key = String(orderId);
@@ -67,11 +67,9 @@ export default function MyOrders() {
         }
         const draft = editDrafts[String(orderId)] || [];
 
-        // Build payload using `menu_item_id` for menu items (per requested shape)
         const itemsPayload = draft.map((it: any) => {
             const qty = Number(it.qty ?? 0);
 
-            // existing order line (server-provided order_item_id)
             if (it.order_item_id) {
                 if (qty <= 0) {
                     return { order_item_id: it.order_item_id, delete: true };
@@ -81,7 +79,6 @@ export default function MyOrders() {
                 return p;
             }
 
-            // prefer `menu_item_id` if present, fall back to `id`
             const menuId = it.menu_item_id ?? it.id ?? undefined;
             if (menuId !== undefined) {
                 if (qty <= 0) {
@@ -92,7 +89,6 @@ export default function MyOrders() {
                 return p;
             }
 
-            // fallback for new/free-text items (send name + quantity)
             if (qty <= 0) {
                 return { name: it.name, delete: true };
             }
@@ -133,7 +129,32 @@ export default function MyOrders() {
         }
     };
 
-    const filteredOrders = orders;
+    // normalization helpers
+    const removeDiacritics = (v: string) =>
+        v.normalize?.('NFD').replace(/[\u0300-\u036f]/g, '') ?? v;
+    const norm = (v?: string) => (v ? removeDiacritics(v).toLowerCase().trim() : '');
+    const digits = (v?: string) => (v ? String(v).replace(/\D/g, '') : '');
+
+    const filteredOrders = useMemo(() => {
+        const q = search.trim();
+        if (!q) return orders;
+        const qNorm = norm(q);
+        const qDigits = digits(q);
+
+        return orders.filter((o) => {
+            // match id
+            if (String(o.id).toLowerCase().includes(q.toLowerCase())) return true;
+
+            // match customer name (diacritics insensitive)
+            if (o.customer && norm(o.customer).includes(qNorm)) return true;
+
+            // match phone number by digits
+            const phoneDigits = digits(o.phone);
+            if (qDigits && phoneDigits.includes(qDigits)) return true;
+
+            return false;
+        });
+    }, [orders, search]);
 
     return (
         <>
@@ -143,7 +164,12 @@ export default function MyOrders() {
                     <h1 className="page-title">Mina Beställningar</h1>
 
                     <div className="search-row">
-                        <input placeholder="Sök efter Order-Id, namn eller telefon" className="search-input" />
+                        <input
+                            placeholder="Sök efter Order-Id, namn eller telefon"
+                            className="search-input"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
 
                     {loading && <div className="muted">Loading…</div>}
