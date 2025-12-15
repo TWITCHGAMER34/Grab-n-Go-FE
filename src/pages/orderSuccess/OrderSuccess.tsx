@@ -4,7 +4,6 @@ import Navbar from '../../components/navbar/NavBar';
 import Footer from '../../components/footer/Footer';
 import './orderSuccess.scss';
 import SuccessCard from './SuccessCard';
-import PromoCta from './PromoCta';
 import Seo from "../../components/Seo.tsx";
 
 export default function OrderSuccess() {
@@ -28,7 +27,6 @@ export default function OrderSuccess() {
                 </div>
             </main>
 
-            <PromoCta onStart={() => navigate('/menu')} />
 
             <Footer />
         </>

@@ -1,4 +1,18 @@
-// File: `src/pages/MyOrdersPage/OrderCard.tsx`
+/**
+ * OrderCard
+ *
+ * Renders a single order card used on the "My Orders" page.
+ * - Displays order metadata, status badge with contextual styling, and item list.
+ * - When `isEditing` is true shows an editable draft form for item quantities and deletions.
+ * - Exposes action buttons to start edit or cancel the order depending on status and lock state.
+ *
+ * Props:
+ * - `order`: order data object
+ * - `isEditing`: whether the order is currently being edited
+ * - `draftItems`: local editable copy of the order's items used when editing
+ * - `loading`: global loading flag to disable actions while saving
+ * - `startEdit`, `cancelEdit`, `updateItemDraft`, `submitEdit`, `cancelOrder`: handlers passed from parent
+ */
 import type { Order, OrderItem } from '../../types/Order';
 
 type Props = {
@@ -13,6 +27,12 @@ type Props = {
     cancelOrder: (orderId: number | string) => Promise<void>;
 };
 
+/**
+ * normalize
+ *
+ * Safe, diacritics-insensitive lowercasing for status/comparison operations.
+ * Uses Unicode-aware removal of diacritics and falls back gracefully when not available.
+ */
 const normalize = (v?: string) =>
     (v || '')
         .normalize?.('NFD')
@@ -20,6 +40,12 @@ const normalize = (v?: string) =>
         .toLowerCase()
         .trim() ?? (v || '').toLowerCase();
 
+/**
+ * getStatusStyle
+ *
+ * Map normalized status strings to simple inline styles for the status badge.
+ * Keeps a small base style and augments colors depending on keywords in the status.
+ */
 function getStatusStyle(status?: string): React.CSSProperties {
     const s = normalize(status);
     const base: React.CSSProperties = {
@@ -30,23 +56,28 @@ function getStatusStyle(status?: string): React.CSSProperties {
         fontWeight: 600,
     };
 
+    // "obehandlad" => neutral / gray
     if (s.includes("obehandlad")) {
-        return { ...base, backgroundColor: '#e2e3e5', color: '#383d41'}; // yellow-ish
+        return { ...base, backgroundColor: '#e2e3e5', color: '#383d41'}; // subtle neutral
     }
 
+    // "tillagas" => warning / yellow
     if (s.includes("tillagas")) {
-        return {  ...base, backgroundColor: '#fff3cd', color: '#856404' }; // gray
+        return {  ...base, backgroundColor: '#fff3cd', color: '#856404' }; // yellow
     }
 
+    // "redo" => success / green
     if (s.includes("redo")) {
         return { ...base, backgroundColor: '#d4edda', color: '#155724' }; // green
     }
 
+    // "slut" => info / blue
     if (s.includes('slut')) {
         return { ...base, backgroundColor: '#cce5ff', color: '#004085' }; // blue
     }
 
-    return { ...base, backgroundColor: '#f1f1f1', color: '#333' }; // neutral
+    // Fallback neutral style
+    return { ...base, backgroundColor: '#f1f1f1', color: '#333' };
 }
 
 export default function OrderCard({
@@ -60,12 +91,13 @@ export default function OrderCard({
                                       submitEdit,
                                       cancelOrder,
                                   }: Props) {
+    // Derived total price for display (safe with missing price/qty)
     const orderTotal = (order.items || []).reduce((s, it) => s + (it.price || 0) * (it.qty || 0), 0);
 
-    // order.locked is a boolean (normalized in api mapper)
+    // `locked` prevents user actions when true (server-controlled)
     const isLocked = Boolean(order.locked);
 
-    // only allow edits/cancel when status is exactly "Obehandlad" (after normalization) and not locked
+    // Only allow edits/cancel when status is exactly "obehandlad" (after normalization)
     const isPending = normalize(order.status) === 'obehandlad';
     const showActions = !isLocked && isPending && !isEditing;
 
@@ -76,6 +108,7 @@ export default function OrderCard({
                     <div className="my-orders-page__order-title">
                         Order #{order.id}{' '}
                         {order.status && (
+                            // Status badge with contextual colors
                             <span
                                 className="my-orders-page__status"
                                 style={getStatusStyle(order.status)}
@@ -86,6 +119,7 @@ export default function OrderCard({
                     </div>
 
                     <div className="my-orders-page__meta">
+                        {/* Optional metadata fields */}
                         {order.customer && <div>Kund: {order.customer}</div>}
                         {order.phone && <div>Telefon: {order.phone}</div>}
                         {order.createdAt && <div>Beställd: {order.createdAt}</div>}
@@ -94,6 +128,7 @@ export default function OrderCard({
                 </div>
 
                 <div className="my-orders-page__order-actions">
+                    {/* Edit / Cancel controls only when allowed by status and lock */}
                     {!isEditing && showActions && (
                         <button
                             className="my-orders-page__btn my-orders-page__btn--edit"
@@ -114,6 +149,7 @@ export default function OrderCard({
             </div>
 
             <div className="my-orders-page__order-body">
+                {/* Read-only items list */}
                 {!isEditing && (
                     <div className="my-orders-page__items-list">
                         {order.items.map((it, idx) => (
@@ -126,12 +162,14 @@ export default function OrderCard({
                     </div>
                 )}
 
+                {/* Editing UI: quantity inputs and mark-for-delete checkboxes */}
                 {isEditing && (
                     <div className="my-orders-page__edit-form">
                         {draftItems.map((it, idx) => (
                             <div className="my-orders-page__edit-row" key={idx}>
                                 <div className="my-orders-page__edit-name">{it.name ?? `#${idx}`}</div>
                                 <div className="my-orders-page__edit-controls">
+                                    {/* Quantity input; zero indicates deletion */}
                                     <input
                                         type="number"
                                         min={0}
@@ -143,6 +181,7 @@ export default function OrderCard({
                                         <input
                                             type="checkbox"
                                             className="my-orders-page__Mark-delete-input"
+                                            // Checked when qty is zero (marked for deletion)
                                             checked={(it.qty || 0) <= 0}
                                             onChange={(e) => updateItemDraft(order.id, idx, { qty: e.target.checked ? 0 : Math.max(1, it.qty || 1) })}
                                         /> Ta bort
@@ -152,6 +191,7 @@ export default function OrderCard({
                         ))}
 
                         <div className="my-orders-page__edit-actions">
+                            {/* Save disabled during loading */}
                             <button className="my-orders-page__btn my-orders-page__btn--save" onClick={() => submitEdit(order.id)} disabled={loading}>Spara ändringar</button>
                             <button className="my-orders-page__btn my-orders-page__btn--ghost" onClick={() => cancelEdit(order.id)}>Avbryt</button>
                         </div>

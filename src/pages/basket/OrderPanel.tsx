@@ -46,17 +46,20 @@ export default function OrderPanel({
             <form className="basket__order-form" onSubmit={onSubmit} noValidate>
                 <label className="basket__form-row">
                     Epost (valfritt)
-                    <input name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} placeholder="din@email.se" />
+                    <input name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                           disabled={loading} placeholder="din@email.se"/>
                 </label>
 
                 <label className="basket__form-row">
                     Önskad upphämtningstid
-                    <input name="pickup" type="datetime-local" value={pickup} onChange={(e) => setPickup(e.target.value)} disabled={loading} />
+                    <input name="pickup" type="datetime-local" value={pickup}
+                           onChange={(e) => setPickup(e.target.value)} disabled={loading}/>
                 </label>
 
                 <div className="basket__summary-rows">
                     <div className="basket__summary-line"><span>Delsumma</span><span>{total.toFixed(0)} kr</span></div>
-                    <div className="basket__summary-line basket__summary-line--total"><strong>Totalt</strong><strong className="basket__summary-line--total--color">{total.toFixed(0)} kr</strong></div>
+                    <div className="basket__summary-line basket__summary-line--total"><strong>Totalt</strong><strong
+                        className="basket__summary-line--total--color">{total.toFixed(0)} kr</strong></div>
                 </div>
 
                 {serverError && <div className="basket__server-error">{serverError}</div>}

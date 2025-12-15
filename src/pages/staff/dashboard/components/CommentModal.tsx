@@ -10,7 +10,7 @@ type Props = {
     saving: boolean;
 };
 
-export default function CommentModal({ orderId, text, onChangeText, onClose, onSave, saving }: Props) {
+export default function CommentModal({ text, onChangeText, onClose, onSave, saving }: Props) {
     return (
         <div className={styles['staff-dashboard__modal-overlay']} style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
             <div className={styles['staff-dashboard__modal']} role="dialog" aria-modal="true" style={{ maxWidth: 600 }}>

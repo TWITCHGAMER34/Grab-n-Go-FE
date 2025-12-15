@@ -1,4 +1,12 @@
-// File: src/pages/staff/dashboard/dashboard.tsx
+/**
+ * StaffDashboard
+ *
+ * Staff-facing dashboard that loads and displays all orders for personnel.
+ * - Shows aggregate stats and filterable order lists.
+ * - Supports locking orders (send to kitchen), adding comments, editing items,
+ *   and updating order status with optimistic UI updates.
+ * - Keeps transient UI state for modals, loading flags and per-order status updates.
+ */
 import {useMemo, useState, useEffect} from 'react';
 import styles from './dashboard.module.scss';
 import type {Order, OrderItem} from '../../../types/Order';
@@ -12,17 +20,25 @@ import CommentModal from './components/CommentModal';
 import Seo from '../../../components/Seo';
 
 export default function StaffDashboard() {
+    // Orders loaded from the API
     const [orders, setOrders] = useState<Order[]>([]);
+    // Current filter for which orders are visible
     const [filter, setFilter] = useState<'all' | 'unhandled' | 'waiting' | 'processing' | 'done'>('all');
+    // Global loading / error flags used while fetching or performing actions
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    // Logout UI state to prevent duplicate requests
     const [loggingOut, setLoggingOut] = useState(false);
+
+    // Comment modal state: which order id is being commented and comment text
     const [commentingOrderId, setCommentingOrderId] = useState<string | null>(null);
     const [commentText, setCommentText] = useState('');
     const [savingComment, setSavingComment] = useState(false);
+
+    // Per-order status update loading map to disable individual controls while updating
     const [statusUpdating, setStatusUpdating] = useState<Record<string, boolean>>({});
 
-    // Edit modal state
+    // Edit modal state: which order is being edited and a local draft of items
     const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
     const [editDraftItems, setEditDraftItems] = useState<OrderItem[] | null>(null);
     const [savingEdit, setSavingEdit] = useState(false);
@@ -30,6 +46,7 @@ export default function StaffDashboard() {
     const navigate = useNavigate();
     const {logout} = useAuth();
 
+    // Fetch all orders from the API and store them in state.
     const loadOrders = async () => {
         setLoading(true);
         setError(null);
@@ -43,31 +60,31 @@ export default function StaffDashboard() {
         }
     };
 
+    // Load orders on initial mount.
     useEffect(() => {
         loadOrders();
     }, []);
 
+    // Map human/front-end status strings to the API status identifiers.
     function frontendToApiStatus(front: string): string {
         const s = (front || '').toLowerCase().trim();
-        if (s === 'obehandlad' || s === 'obehandlade') return 'pending';
+        if (s === 'obehandlad') return 'pending';
         if (s === 'behandlas') return 'in_kitchen';
         if (s === 'redo') return 'ready';
         if (s === 'slutförd') return 'completed';
-        if (s === 'avbruten') return 'cancelled';
-        if (s.includes('processing') || s.includes('kitchen')) return 'in_kitchen';
-        if (s.includes('done') || s.includes('completed') || s.includes('ready')) return 'completed';
         return 'pending';
     }
 
+    // Predicate to test if an order's status should be visible for the current filter.
     const statusMatchesFilter = (status: string, filterValue: typeof filter) => {
         if (filterValue === 'all') return true;
         if (filterValue === 'unhandled') return status === 'Obehandlad';
         if (filterValue === 'processing') return status === 'Behandlas' || status === 'in_kitchen' || status === 'In kitchen';
-        if (filterValue === 'waiting') return status === 'Väntar' || status === 'waiting';
         if (filterValue === 'done') return status === 'Redo' || status === 'Slutförd' || status === 'completed' || status === 'ready';
         return false;
     };
 
+    // Derived stats for the header (memoized for performance).
     const stats = useMemo(() => {
         const total = orders.length;
         const unhandled = orders.filter((o) => statusMatchesFilter(o.status, 'unhandled')).length;
@@ -76,8 +93,10 @@ export default function StaffDashboard() {
         return {total, unhandled, processing, done};
     }, [orders]);
 
+    // Orders to render according to the active filter
     const visible = orders.filter((o) => statusMatchesFilter(o.status, filter));
 
+    // Log out handler with simple duplicate-prevention
     const handleLogout = async () => {
         if (loggingOut) return;
         setLoggingOut(true);
@@ -89,17 +108,20 @@ export default function StaffDashboard() {
         }
     };
 
+    // Open comment modal and prefill with existing note when available
     const openComment = (order: Order) => {
         setCommentingOrderId(order?.id != null ? String(order.id) : null);
         setCommentText(order?.note ?? '');
     };
 
+    // Close comment modal and reset related state
     const closeComment = () => {
         setCommentingOrderId(null);
         setCommentText('');
         setSavingComment(false);
     };
 
+    // Persist comment to the server and refresh orders on success
     const saveComment = async () => {
         if (!commentingOrderId) return;
         setSavingComment(true);
@@ -113,6 +135,7 @@ export default function StaffDashboard() {
         }
     };
 
+    // Lock an order (send to kitchen). Confirm with the user first.
     const handleLock = async (orderId: string | number) => {
         if (!confirm('Skicka till köket och lås beställningen?')) return;
         setLoading(true);
@@ -127,6 +150,7 @@ export default function StaffDashboard() {
         }
     };
 
+    // Update status for a specific order with optimistic UI update and rollback on failure
     const handleStatusSelect = async (orderId: string | number, newStatus: string) => {
         const id = String(orderId);
         const prevStatus = orders.find((o) => String(o.id) === id)?.status ?? '';
@@ -134,6 +158,7 @@ export default function StaffDashboard() {
 
         const apiStatus = frontendToApiStatus(newStatus);
 
+        // Optimistically update UI
         setOrders((prev) => prev.map((o) => (String(o.id) === id ? {...o, status: newStatus} : o)));
         setStatusUpdating((s) => ({...s, [id]: true}));
         setError(null);
@@ -141,6 +166,7 @@ export default function StaffDashboard() {
         try {
             await updateStatus(orderId, apiStatus);
         } catch (err: any) {
+            // Rollback to previous status on error
             setOrders((prev) => prev.map((o) => (String(o.id) === id ? {...o, status: prevStatus} : o)));
             setError(err?.response?.data?.message ?? err?.message ?? 'Failed to update status');
         } finally {
@@ -153,18 +179,22 @@ export default function StaffDashboard() {
     };
 
     // --- Edit helpers ---
+
+    // Open edit modal and create a local copy of items for drafting changes
     const openEdit = (order: Order) => {
         const id = order?.id != null ? String(order.id) : null;
         setEditingOrderId(id);
         setEditDraftItems(Array.isArray(order?.items) ? order.items.map(it => ({...it})) : []);
     };
 
+    // Close edit modal and reset draft state
     const closeEdit = () => {
         setEditingOrderId(null);
         setEditDraftItems(null);
         setSavingEdit(false);
     };
 
+    // Update a single item in the local draft by index
     const updateDraftItem = (index: number, changes: Partial<OrderItem>) => {
         setEditDraftItems((prev) => {
             if (!prev) return prev;
@@ -172,6 +202,7 @@ export default function StaffDashboard() {
         });
     };
 
+    // Persist draft edits to the server and refresh orders on success
     const saveEdit = async () => {
         if (!editingOrderId || !editDraftItems) return;
         setSavingEdit(true);
