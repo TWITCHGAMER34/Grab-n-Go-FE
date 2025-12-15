@@ -5,6 +5,7 @@ import {useAuth} from '../../../context/AuthContext';
 import Navbar from "../../../components/navbar";
 import LoginForm from './LoginForm';
 import './login.scss';
+import Seo from "../../../components/Seo.tsx";
 
 export default function LoginPage() {
     const {login} = useAuth();
@@ -27,6 +28,7 @@ export default function LoginPage() {
 
     return (
         <>
+            <Seo title="Log in" description="Log in to your account" />
             <Navbar/>
             <main className="auth-page">
                 <div className="auth-page__card">

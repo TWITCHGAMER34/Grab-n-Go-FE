@@ -45,18 +45,17 @@
 
 .dish-card__order {
   position: absolute;
-  left: 50%;
-  bottom: 1rem;
-  transform: translate(-50%, 10px);
+  left: 10px;
+  bottom: 130px;
+  transform: translateY(8px);
   opacity: 0;
   pointer-events: none;
-  z-index: 5;
-  display: inline-block;
-  padding: 0.5rem 1rem;
+  z-index: 6;
+  display: block;
   border-radius: 999px;
   color: var(--surface);
   font-weight: 600;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 200ms ease, transform 200ms ease;
   text-decoration: none;
 
   &--skeleton {
@@ -70,10 +69,6 @@
     background-size: 200% 100%;
     animation: shimmer 1.2s linear infinite;
   }
-
-  &--active {
-    /* when present the button becomes visible on hover (targeted below) */
-  }
 }
 
 .dish-card__order svg {
@@ -83,10 +78,10 @@
   margin-left: 6px;
 }
 
-/* reveal order button and animate image on hover */
-.dish-card:hover .dish-card__order--active {
+.dish-card:hover .dish-card__order--active,
+.dish-card__order--active:hover {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateY(0);
   pointer-events: auto;
 }
 

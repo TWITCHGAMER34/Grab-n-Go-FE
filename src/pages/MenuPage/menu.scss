@@ -77,6 +77,21 @@
   box-sizing: border-box;
 }
 
+/* initial off-screen state for real cards (skip skeletons) */
+.menu__items .menu__item:not(.menu__item--skeleton) {
+  transform: translateY(-24px);
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1), opacity 420ms;
+}
+
+/* when parent gets is-loaded, cards slide down and fade in */
+.menu__items.is-loaded .menu__item:not(.menu__item--skeleton) {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+
 /* Item block and elements (BEM) */
 .menu__item {
   background-color: var(--surface);

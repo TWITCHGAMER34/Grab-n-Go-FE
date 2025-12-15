@@ -7,6 +7,7 @@ import './MyOrders.scss';
 import OrderList from './OrderList';
 import type { Order, OrderItem } from '../../types/Order';
 import { fetchOrders, updateOrder, deleteOrder } from '../../api/orders';
+import Seo from "../../components/Seo.tsx";
 
 export default function MyOrders() {
     const { user } = useAuth();
@@ -158,6 +159,7 @@ export default function MyOrders() {
 
     return (
         <>
+            <Seo title="My orders" description="See your orders" />
             <Navbar />
             <main className="my-orders-page">
                 <div className="container">

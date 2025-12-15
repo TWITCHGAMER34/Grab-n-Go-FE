@@ -4,22 +4,20 @@ import type { Order, OrderItem } from '../types/Order';
 
 const apiBase = import.meta.env.VITE_API_URL;
 
-function mapStatus(apiStatus: string): Order['status'] {
+const mapStatus = (apiStatus: string): Order['status'] => {
     switch (apiStatus) {
         case 'pending':
             return 'Obehandlad';
         case 'in_kitchen':
-            return 'Behandlas';
+            return 'Tillagas';
         case 'ready':
             return 'Redo';
         case 'completed':
             return 'Slutförd';
-        case 'cancelled':
-            return 'Avbruten';
         default:
             return 'Obehandlad';
     }
-}
+};
 
 function parseToDate(input?: unknown): Date | null {
     if (!input || typeof input !== 'string') return null;
@@ -62,27 +60,23 @@ function mapItem(it: any): OrderItem {
 }
 
 function mapOrder(api: any): Order {
-    const user = api.user ?? null;
+    const user = api.user;
     const customer = user?.name;
 
     // normalize locked to a boolean so frontend logic is simpler
     const lockedRaw = api.locked;
-    const locked =
-        lockedRaw === true ||
-        lockedRaw === 1 ||
-        lockedRaw === '1' ||
-        String(lockedRaw).toLowerCase() === 'true';
+    const locked = lockedRaw === 1
 
     return {
         id: String(api.id),
         customer,
-        phone: api.guest_phone ?? user?.phone ?? api.phone ?? undefined,
-        email: api.email ?? user?.email ?? undefined,
+        phone: user?.phone,
+        email: user?.email,
         createdAt: formatDateTime(api.created_at) ?? String(api.created_at ?? ''),
         pickupAt: formatDateTime(api.pickup_time) ?? undefined,
         items: Array.isArray(api.items) ? api.items.map(mapItem) : [],
         total: Number(api.total ?? 0),
-        note: api.staff_note ?? api.note ?? null,
+        note: api.staff_note ?? null,
         status: mapStatus(api.status),
         locked,
     };

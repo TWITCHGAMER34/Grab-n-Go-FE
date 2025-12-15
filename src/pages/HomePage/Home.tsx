@@ -1,4 +1,5 @@
-// File: `src/pages/HomePage/Home.tsx`
+// File: src/pages/HomePage/Home.tsx
+import { useEffect, useState } from 'react';
 import Navbar from '../../components/navbar';
 import SmallCard from '../../components/SmallCard/SmallCard';
 import './home.scss';
@@ -7,14 +8,26 @@ import useMenu from '../../hooks/useMenu';
 import DishCard from '../../components/DishCard/DishCard';
 import Footer from '../../components/footer/Footer.tsx';
 import { Link } from 'react-router-dom';
+import Seo from "../../components/Seo.tsx";
 
 export default function HomePage() {
     const { dishes, loading, error } = useMenu(3);
+    const [cardsLoaded, setCardsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (!loading) {
+            // small delay so DOM renders before transition begins
+            const t = setTimeout(() => setCardsLoaded(true), 50);
+            return () => clearTimeout(t);
+        }
+        setCardsLoaded(false);
+    }, [loading]);
 
     const skeletonCount = 3;
 
     return (
         <>
+            <Seo title="Home Page" description="HomePage of Grab 'n' go" />
             <Navbar active="home" />
 
             <section className="hero">
@@ -40,7 +53,7 @@ export default function HomePage() {
                 {loading && <p className="popular-dishes__loading">Laddar rätter...</p>}
                 {error && <p className="popular-dishes__error">{error}</p>}
 
-                <div className="popular-dishes__list">
+                <div className={`popular-dishes__list ${cardsLoaded ? 'is-loaded' : ''}`}>
                     {loading
                         ? Array.from({ length: skeletonCount }).map((_, i) => <DishCard key={`skeleton-${i}`} skeleton />)
                         : dishes.map((dish) => <DishCard key={dish.id} dish={dish} />)}

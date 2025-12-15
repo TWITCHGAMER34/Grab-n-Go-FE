@@ -1,10 +1,12 @@
-// File: `src/pages/MenuPage/Menu.tsx`
+// File: src/pages/MenuPage/Menu.tsx
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer/Footer";
 import useMenu from "./useMenu";
 import MenuItem from "./MenuItem";
 import "./menu.scss";
+import Seo from "../../components/Seo.tsx";
 
 export default function MenuPage() {
     const {
@@ -21,6 +23,16 @@ export default function MenuPage() {
         handleAdd,
         skeletonCount,
     } = useMenu();
+
+    const [cardsLoaded, setCardsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (!loading) {
+            const t = setTimeout(() => setCardsLoaded(true), 50);
+            return () => clearTimeout(t);
+        }
+        setCardsLoaded(false);
+    }, [loading]);
 
     const skeletons: ReactNode[] = Array.from({ length: skeletonCount }, (_, i) => (
         <li
@@ -61,6 +73,7 @@ export default function MenuPage() {
 
     return (
         <>
+            <Seo title="Menu" description="Our menu" />
             <Navbar active="menu" />
 
             <section className="menu">
@@ -95,7 +108,7 @@ export default function MenuPage() {
                         <p>No dishes for the selected filter.</p>
                     )}
 
-                    <ul className="menu__items" role="list">
+                    <ul className={`menu__items ${cardsLoaded ? "is-loaded" : ""}`} role="list">
                         {loading
                             ? skeletons
                             : dishes.map((dish) => {

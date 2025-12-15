@@ -1,16 +1,4 @@
 // File: `src/pages/basket/basket.scss`
-/* BEM: block = basket */
-:root {
-  --bg-soft: #fbf6f1;
-  --surface: #fff;
-  --border: #efe9e4;
-  --text-dark: #2c2c2c;
-  --text-muted: #8b8b8b;
-  --accent-left: #ff8a4a;
-  --accent-right: #b7e34b;
-  --accent: linear-gradient(90deg, var(--accent-left) 0%, var(--accent-right) 100%);
-}
-
 /* page layout */
 .basket {
   background: var(--bg-soft);
@@ -101,6 +89,11 @@
   cursor: pointer;
   font-weight: 700;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform .3s ease;
+  &:hover{
+    transform: scale(1.2);
+    transition: transform .3s ease;
+  }
 }
 
 /* filled list item */

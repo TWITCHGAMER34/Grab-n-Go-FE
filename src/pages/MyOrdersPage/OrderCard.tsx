@@ -30,19 +30,19 @@ function getStatusStyle(status?: string): React.CSSProperties {
         fontWeight: 600,
     };
 
-    if (s.includes('behandl') || s.includes('tillag') || s.includes('kitchen') || s.includes('in_kitchen')) {
-        return { ...base, backgroundColor: '#fff3cd', color: '#856404' }; // yellow-ish
+    if (s.includes("obehandlad")) {
+        return { ...base, backgroundColor: '#e2e3e5', color: '#383d41'}; // yellow-ish
     }
 
-    if (s.includes('obehandl') || s === 'pending' || s.includes('unhandled')) {
-        return { ...base, backgroundColor: '#e2e3e5', color: '#383d41' }; // gray
+    if (s.includes("tillagas")) {
+        return {  ...base, backgroundColor: '#fff3cd', color: '#856404' }; // gray
     }
 
-    if (s.includes('redo') || s.includes('slutf') || s.includes('completed') || s.includes('klar')) {
+    if (s.includes("redo")) {
         return { ...base, backgroundColor: '#d4edda', color: '#155724' }; // green
     }
 
-    if (s.includes('vantar') || s.includes('waiting')) {
+    if (s.includes('slut')) {
         return { ...base, backgroundColor: '#cce5ff', color: '#004085' }; // blue
     }
 

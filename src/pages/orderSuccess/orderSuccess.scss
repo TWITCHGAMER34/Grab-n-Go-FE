@@ -1,14 +1,4 @@
 /* File: `src/pages/orderSuccess/orderSuccess.scss` */
-:root {
-  --bg-soft: #fbf6f1;
-  --surface: #fff;
-  --border: #efe9e4;
-  --text-dark: #2c2c2c;
-  --text-muted: #8b8b8b;
-  --accent-left: #ff8a4a;
-  --accent-right: #b7e34b;
-  --accent: linear-gradient(90deg, var(--accent-left) 0%, var(--accent-right) 100%);
-}
 
 .order-success {
   background: var(--bg-soft);

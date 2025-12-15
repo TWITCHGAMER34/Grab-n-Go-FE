@@ -5,6 +5,7 @@ import Footer from '../../components/footer/Footer';
 import './orderSuccess.scss';
 import SuccessCard from './SuccessCard';
 import PromoCta from './PromoCta';
+import Seo from "../../components/Seo.tsx";
 
 export default function OrderSuccess() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function OrderSuccess() {
 
     return (
         <>
+            <Seo title="Order Sent" description="" />
             <Navbar />
             <main className="order-success">
                 <div className="order-success__container container">

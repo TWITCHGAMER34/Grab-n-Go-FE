@@ -35,7 +35,7 @@ export default function NavActions() {
                     {loggingOut ? 'Loggar ut…' : 'Logga ut'}
                 </button>
             ) : (
-                <NavLink to="/login" className={styles['navbar__right-login']}>
+                <NavLink to="/login" title="Log in" className={styles['navbar__right-login']}>
                     Logga in
                 </NavLink>
             )}
@@ -44,6 +44,7 @@ export default function NavActions() {
                 to="/basket"
                 className={styles['navbar__right-basket-btn']}
                 aria-label={`Öppna kundvagn (${totalItems} artiklar)`}
+                title="Basket"
             >
         <span className={styles['navbar__right-basket-icon']}>
           <ShoppingBag/>
@@ -56,12 +57,12 @@ export default function NavActions() {
                 )}
             </NavLink>
 
-            <div className={styles['navbar__right-user-pill']}>
+            <div className={styles['navbar__right-user-pill']} title="Staff-Login">
                 <NavLink className={styles['navbar__right-user-link']} to={"/staff/login"}>
         <span className={styles['navbar__right-user-icon']}>
           <User/>
         </span>
-                <span className={styles['navbar__right-user-text']}>Personal</span>
+                    <span className={styles['navbar__right-user-text']}>Personal</span>
                 </NavLink>
             </div>
         </div>

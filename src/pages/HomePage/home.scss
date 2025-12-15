@@ -62,9 +62,9 @@
   color: var(--text-muted);
 }
 
-.popular-dishes__error{
-    font-size: 18px;
-    color: var(--error);
+.popular-dishes__error {
+  font-size: 18px;
+  color: var(--error);
 }
 
 .popular-dishes__list {
@@ -72,6 +72,28 @@
   flex-direction: row;
   gap: 7rem;
 }
+
+/* initial off-screen state for real cards (skip skeletons) */
+.popular-dishes__list .dish-card:not(.dish-card--skeleton) {
+  transform: translateY(-24px);
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1), opacity 420ms;
+}
+
+/* when parent gets is-loaded, cards slide down and fade in */
+.popular-dishes__list.is-loaded .dish-card:not(.dish-card--skeleton) {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* staggered delays (adjust as needed) */
+.popular-dishes__list.is-loaded .dish-card:nth-child(1) { transition-delay: 40ms; }
+.popular-dishes__list.is-loaded .dish-card:nth-child(2) { transition-delay: 110ms; }
+.popular-dishes__list.is-loaded .dish-card:nth-child(3) { transition-delay: 180ms; }
+.popular-dishes__list.is-loaded .dish-card:nth-child(4) { transition-delay: 250ms; }
+.popular-dishes__list.is-loaded .dish-card:nth-child(5) { transition-delay: 320ms; }
+.popular-dishes__list.is-loaded .dish-card:nth-child(6) { transition-delay: 390ms; }
 
 .popular-dishes__button {
   width: fit-content;
@@ -81,7 +103,11 @@
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: 0.3s ease;
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.3s ease;
+  }
 }
 
 .popular-dishes__button-link {

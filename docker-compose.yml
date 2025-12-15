@@ -1,0 +1,11 @@
+services:
+  grabngo_frontend:
+    image: registry.sasvirtual.se/grabngo_frontend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8095:3000"
+    environment:
+      - "VITE_API_URL=https://api.grabngo.sasvirtual.se"

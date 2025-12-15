@@ -113,7 +113,6 @@
     color: #222;
     outline: none;
     transition: box-shadow .12s, border-color .12s;
-
     &:focus {
       box-shadow: 0 6px 18px rgba(16, 16, 16, 0.06);
       border-color: rgba(0,0,0,0.08);
@@ -132,6 +131,11 @@
     background: var(--linear);
     cursor: pointer;
     box-shadow: 0 6px 18px rgba(255, 154, 87, 0.14);
+    transition: transform 0.3s ease;
+    &:hover{
+      transform: scale(1.1);
+      transition: transform 0.3s ease;
+    }
   }
 
   &__note {

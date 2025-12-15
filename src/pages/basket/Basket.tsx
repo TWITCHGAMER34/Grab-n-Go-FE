@@ -10,6 +10,7 @@ import Footer from '../../components/footer/Footer.tsx';
 import BasketList from './BasketList';
 import OrderPanel from './OrderPanel';
 import EmptyHero from './EmptyHero';
+import Seo from "../../components/Seo.tsx";
 
 export default function Basket() {
     const navigate = useNavigate();
@@ -86,6 +87,7 @@ export default function Basket() {
 
     return (
         <>
+            <Seo title="Basket" description="Your basket" />
             <Navbar />
             <main className={`basket ${isEmpty ? 'basket--empty' : 'basket--filled'}`}>
                 <div className="basket__container container">

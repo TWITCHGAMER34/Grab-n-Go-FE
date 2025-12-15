@@ -5,6 +5,7 @@ import {useAuth} from "../../../context/AuthContext";
 import RegisterForm from "./RegisterForm";
 import Navbar from "../../../components/navbar";
 import "../login/login.scss";
+import Seo from "../../../components/Seo.tsx";
 
 type FormState = {
     name: string;
@@ -86,6 +87,7 @@ export default function RegisterPage() {
 
     return (
         <>
+            <Seo title="Register" description="Register a new account" />
             <Navbar/>
             <main className="auth-page">
                 <div className="auth-page__card">
