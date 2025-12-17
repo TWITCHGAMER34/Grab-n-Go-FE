@@ -102,11 +102,12 @@
     gap: 5rem;
     padding: 2rem;
     width: 100%;
+    height: auto;
   }
 
   .small-card {
     border: 1px solid var(--border);
-    height: 100%;
+    height: fit-content;
     padding: 16px;
     text-align: center;
   }
@@ -184,6 +185,212 @@
     &__link {
       color: var(--primary);
       text-decoration: none;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .about-us__hero {
+    padding: 40px 20px;
+
+    &__title {
+      font-size: 44px;
+    }
+
+    &__text {
+      font-size: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+  }
+
+  .about-us__hero__info {
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+
+    &__wrapper {
+      max-width: 680px;
+    }
+
+    &__image__wrapper {
+      max-width: 280px;
+    }
+  }
+
+  .about-us__values {
+    &__title {
+      font-size: 30px;
+    }
+    &__cards {
+      gap: 3rem;
+    }
+  }
+
+  .about-us__contact {
+    &__columns {
+      gap: 48px;
+    }
+    .card {
+      width: 300px;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+
+  .about-us__hero__wrapper {
+    padding: 0 16px;
+  }
+
+  .about-us__hero {
+    padding: 32px 12px;
+    text-align: center;
+    max-width: 100%;
+
+    &__title {
+      font-size: 2,5rem;
+      margin-bottom: 8px;
+      line-height: 1.05;
+    }
+
+    &__text {
+      font-size: 15px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  /* stack text and image; center image */
+  .about-us__hero__info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: center;
+    text-align: center;
+
+    &__wrapper {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    &__image__wrapper {
+      max-width: 360px;
+      width: 66%;
+      margin: 0 auto;
+      align-self: center;
+      box-shadow: 0 10px 30px rgba(12, 18, 28, 0.18);
+    }
+  }
+
+  .about-us__values {
+    margin-top: 48px;
+    padding: 0 12px;
+    background-color: var(--surface);
+
+    &__title {
+      font-size: 28px;
+      margin-bottom: 24px;
+    }
+
+    &__container {
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    &__cards {
+      flex-direction: column;
+      gap: 1.25rem;
+      padding: 1rem;
+    }
+
+    .small-card {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+  }
+
+  .about-us__contact {
+    margin-top: 48px;
+    margin-bottom: 48px;
+    text-align: center;
+
+    &__columns {
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      padding: 14px;
+    }
+
+    &__item {
+      justify-content: center;
+      text-align: center;
+
+      &__icon {
+        margin-right: 6px;
+      }
+
+      &__content {
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .about-us__hero {
+    padding: 20px 12px;
+
+    &__text {
+      font-size: 14px;
+      padding: 0 6px;
+    }
+  }
+
+  .about-us__hero__info {
+    &__image__wrapper {
+      width: 72%;
+      max-width: 320px;
+    }
+  }
+
+  .about-us__values {
+    &__title {
+      font-size: 22px;
+    }
+
+    &__cards {
+      gap: 1rem;
+      padding: 0.75rem;
+    }
+
+    .small-card {
+      padding: 12px;
+    }
+  }
+
+  .about-us__contact {
+    &__title {
+      font-size: 22px;
+    }
+
+    .card {
+      padding: 12px;
+      width: 100%;
+    }
+
+    &__item {
+      font-size: 15px;
+      &__icon {
+        margin-right: 6px;
+      }
     }
   }
 }

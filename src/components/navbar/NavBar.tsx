@@ -4,6 +4,7 @@ import styles from './navbar.module.scss';
 import NavBrand from './NavBrand';
 import NavCenter from './NavCenter';
 import NavActions from './NavActions';
+import Hamburger from './Hamburger';
 
 export default function Navbar({ active }: { active?: NavKey }) {
     return (
@@ -11,6 +12,7 @@ export default function Navbar({ active }: { active?: NavKey }) {
             <NavBrand />
             <NavCenter active={active} />
             <NavActions />
+            <Hamburger />
         </nav>
     );
 }

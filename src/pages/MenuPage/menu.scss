@@ -328,3 +328,26 @@
     background-position: -200% 0;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .menu__filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* center items on wrapped rows */
+    gap: 10px;
+    padding: 0;
+  }
+
+  /* make each filter occupy roughly one third so first row has 3 items */
+  .menu__filters > * {
+    flex: 0 0 calc(33.333% - 10px);
+    max-width: calc(33.333% - 10px);
+    display: flex;
+    justify-content: center; /* center the inner button if it's direct child */
+  }
+
+  /* ensure the actual button fills its parent cell */
+  .menu__filters .menu__filter-btn {
+    width: 100%;
+  }
+}

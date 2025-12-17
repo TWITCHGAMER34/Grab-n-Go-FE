@@ -1,0 +1,91 @@
+.hamburger-root {
+  position: relative;
+}
+
+/* hide by default on large screens, show on small screens */
+.hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.hamburger__line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #111;
+  margin: 4px 0;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+/* show on mobile */
+@media (max-width: 768px) {
+  /* ensure the root container is visible inside the navbar on small screens */
+  .hamburger-root {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .hamburger {
+    display: inline-flex;
+  }
+}
+
+/* open state animation */
+.hamburger.is-open .hamburger__line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.hamburger.is-open .hamburger__line:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.is-open .hamburger__line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* panel styles */
+.hamburger-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  min-width: 200px;
+  padding: 8px 0;
+  opacity: 0;
+  transform-origin: top right;
+  transform: scale(0.95);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+  z-index: 50;
+}
+.hamburger-panel.open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* list and links */
+.hamburger-items {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+.hamburger-items li {
+  margin: 0;
+}
+.hamburger-link {
+  display: block;
+  padding: 10px 16px;
+  color: #111;
+  text-decoration: none;
+  font-size: 15px;
+}
+.hamburger-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
