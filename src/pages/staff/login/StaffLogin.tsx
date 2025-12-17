@@ -1,29 +1,34 @@
 // File: src/pages/staff/login/StaffLogin.tsx
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import styles from './StaffLogin.module.scss';
 import {Lock, User} from 'lucide-react';
-import {useAuth} from '../../../context/AuthContext';
 import {useNavigate, Link} from 'react-router-dom';
 import {ArrowLeft} from 'lucide-react';
 import Seo from "../../../components/Seo.tsx";
+import { useAuth } from "../../../context/AuthContext.tsx";
 
 export default function StaffLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const {staffLogin} = useAuth();
     const navigate = useNavigate();
+    const { user, loading, staffLogin } = useAuth();
+
+    useEffect(() => {
+        if (!loading && user?.role === 'staff') {
+            navigate('/staff/dashboard');
+        }
+    }, [user, loading, navigate]);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
             await staffLogin(email, password);
-            // on success, navigate to staff area (adjust path if needed)
             navigate('/staff/dashboard');
         } catch (err: any) {
-            console.error(err);
-            setError(err?.response?.data?.message || err?.message || 'Login failed');
+            setError(err?.response?.data?.error);
         }
     };
 

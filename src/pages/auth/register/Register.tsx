@@ -17,7 +17,7 @@ type FormState = {
 
 export default function RegisterPage() {
     const navigate = useNavigate();
-    const {register} = useAuth();
+    const { register } = useAuth();
     const [form, setForm] = useState<FormState>({
         name: "",
         email: "",
@@ -72,13 +72,13 @@ export default function RegisterPage() {
             await register(
                 form.name.trim(),
                 form.email.trim(),
-                form.phone.trim(),
+                form.phone,
                 form.password
             );
             navigate("/login");
         } catch (err: any) {
             setServerError(
-                err?.response?.data?.message ?? err?.message ?? "Registration failed"
+                err?.response?.data?.error
             );
         } finally {
             setLoading(false);
@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
     return (
         <>
-            <Seo title="Register" description="Register a new account" />
+            <Seo title="Register" description="Register a new account"/>
             <Navbar/>
             <main className="auth-page">
                 <div className="auth-page__card">

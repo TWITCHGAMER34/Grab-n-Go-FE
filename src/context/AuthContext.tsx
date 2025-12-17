@@ -7,9 +7,9 @@
  * - Fetches the current user on mount and keeps a minimal `User` shape in state.
  *
  */
-import { createContext, useContext, useEffect, useState } from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
+import {checkSession, login, logout as logoutHelper, register, staffLogin} from "./authHelpers.ts";
 import type { ReactNode } from 'react';
-import axios from 'axios';
 
 export interface User {
     id: string;
@@ -26,9 +26,9 @@ interface AuthContextType {
     loading: boolean;
     isLoggedIn: boolean;
     isStaffLoggedIn: boolean;
-    register: (name: string, email: string, phone: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string, phone: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
-    staffLogin: (username: string, password: string) => Promise<void>;
+    staffLogin: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -49,130 +49,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Loading flag used while fetching current user or performing auth actions
     const [loading, setLoading] = useState(true);
     // Convenience boolean to indicate staff role
-    const [isStaffLoggedIn, setIsStaffLoggedIn] = useState(false);
 
-    /**
-     * updateUserState
-     *
-     * Centralized updater to set `user` and derived `isStaffLoggedIn`.
-     * Ensures role changes are reflected consistently across the provider.
-     */
-    const updateUserState = (u: User | null) => {
-        setUser(u);
-        setIsStaffLoggedIn(!!u && u.role === 'staff');
-    };
-
-    /**
-     * fetchCurrentUser
-     *
-     * Retrieve the currently authenticated user from the backend.
-     * Uses `withCredentials` so server-side session cookies are sent.
-     * On failure, clears the user state.
-     */
-    const fetchCurrentUser = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/user`, { withCredentials: true });
-            // Some backends wrap the user under `data.user`; tolerate missing fields.
-            updateUserState(response.data?.user ?? null);
-        } catch (error) {
-            // Keep logging minimal but useful for debugging auth failures.
-            console.error('Error fetching current user:', error);
-            updateUserState(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Fetch the current user on provider mount.
     useEffect(() => {
-        void fetchCurrentUser();
-    }, []);
+        checkSession(setUser, setLoading);
+    }, [])
 
-    /**
-     * register
-     *
-     * Register a new user and update local state when the backend returns the created user.
-     */
-    const register = async (name: string, email: string, phone: string, password: string) => {
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/auth/register`,
-            { name, email, phone, password },
-            { withCredentials: true }
-        );
-        if (response.data?.user) {
-            updateUserState(response.data.user);
-        }
-    };
-
-    /**
-     * login
-     *
-     * Log in a customer. If the server returns a user object use it; otherwise
-     * re-fetch the current user (some endpoints rely on session cookies only).
-     */
-    const login = async (email: string, password: string) => {
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/auth/login`,
-            { email, password },
-            { withCredentials: true }
-        );
-
-        if (response.data?.user) {
-            updateUserState(response.data.user);
-        } else {
-            // Some backends may not return the user; ensure state is synchronized.
-            await fetchCurrentUser();
-        }
-    };
-
-    /**
-     * staffLogin
-     *
-     * Staff-specific login flow. Errors are propagated after logging for visibility.
-     */
-    const staffLogin = async (email: string, password: string) => {
-        try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/staff/login`,
-                { email, password },
-                { withCredentials: true }
-            );
-            if (response.data?.user) {
-                updateUserState(response.data.user);
-            } else {
-                await fetchCurrentUser();
-            }
-        } catch (error) {
-            console.error('Staff login error:', error);
-            throw error;
-        }
-    };
-
-    /**
-     * logout
-     *
-     * Invalidate the session on the server and clear local auth state regardless of outcome.
-     */
     const logout = async () => {
-        try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, { withCredentials: true });
-        } finally {
-            // Ensure local state is cleared even if the network call fails.
-            updateUserState(null);
-        }
-    };
+        await logoutHelper();
+        setUser(null);
+    }
+
 
     return (
         <AuthContext.Provider value={{
             user,
             loading,
             isLoggedIn: !!user,
-            isStaffLoggedIn,
-            login,
-            logout,
-            register,
-            staffLogin,
+            isStaffLoggedIn: user?.role === 'staff' || false,
+            register: (name: string, email: string, password: string, phone: string)=> register(name, email, password, phone),
+            login: (email: string, password: string) => login(email, password, setUser),
+            staffLogin: (email: string, password: string) => staffLogin(email, password, setUser),
+            logout
         }}>
             {children}
         </AuthContext.Provider>
